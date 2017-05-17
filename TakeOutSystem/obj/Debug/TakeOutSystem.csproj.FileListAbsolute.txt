@@ -1,0 +1,9 @@
+E:\Programs\TakeOutSystem\TakeOutSystem\bin\Debug\TakeOutSystem.exe.config
+E:\Programs\TakeOutSystem\TakeOutSystem\bin\Debug\TakeOutSystem.exe
+E:\Programs\TakeOutSystem\TakeOutSystem\bin\Debug\TakeOutSystem.pdb
+E:\Programs\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.csprojResolveAssemblyReference.cache
+E:\Programs\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.Form1.resources
+E:\Programs\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.Properties.Resources.resources
+E:\Programs\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.csproj.GenerateResource.Cache
+E:\Programs\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.exe
+E:\Programs\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.pdb
