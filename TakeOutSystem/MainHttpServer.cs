@@ -27,11 +27,14 @@ namespace TakeOutSystem
       }
       else
       {
-        string tarPath = m_rootPath + p.http_url;
+        string tarPath = m_rootPath + "/wwwroot" + p.http_url;
         if (File.Exists(tarPath))
         {
           p.writeSuccess();
-          File.Open(tarPath, FileMode.Open, FileAccess.Read).CopyTo(p.outputStream.BaseStream);
+          using (var file = File.Open(tarPath, FileMode.Open, FileAccess.Read))
+          {
+            file.CopyTo(p.outputStream.BaseStream);
+          }
         }
         else
         {
@@ -44,12 +47,7 @@ namespace TakeOutSystem
     {
       Console.WriteLine("POST request: {0}", p.http_url);
       string data = inputData.ReadToEnd();
-
-      p.outputStream.WriteLine("<html><body><h1>test server</h1>");
-      p.outputStream.WriteLine("<a href=/test>return</a><p>");
-      p.outputStream.WriteLine("postbody: <pre>{0}</pre>", data);
-
-
+      p.outputStream.Write(DataManager.Instance.AnalyseOrderData(data));
     }
   }
 }

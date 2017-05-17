@@ -31,7 +31,11 @@ namespace TakeOutSystem
         listener.Start();
         while (IsActive)
         {
-          TcpClient s = listener.AcceptTcpClient();
+          var task = listener.AcceptTcpClientAsync();
+          while (IsActive && !task.IsCompleted) ;
+          if(!IsActive)
+            break;
+          TcpClient s = task.Result;
           HttpProcessor processor = new HttpProcessor(s, this);
           Thread thread = new Thread(new ThreadStart(processor.process));
           thread.Start();

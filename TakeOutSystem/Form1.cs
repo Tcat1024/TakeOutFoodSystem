@@ -16,6 +16,8 @@ namespace TakeOutSystem
 {
   public partial class Form1 : Form
   {
+    private Size m_smallSize = new Size(1007, 100);
+    private Size m_bigSize = new Size(1007, 705);
     private Thread m_httpThread;
     private HttpServer m_curServer;
     public Form1()
@@ -68,6 +70,7 @@ namespace TakeOutSystem
       m_httpThread.Start();
 
       PutOutUrlTex.Text = curIp.ToString() + ":" + curPort;
+      ShowOpenGroup(true);
     }
 
 
@@ -83,6 +86,64 @@ namespace TakeOutSystem
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
+    }
+
+    private void ClearBtn_Click(object sender, EventArgs e)
+    {
+      if (MessageBox.Show("确定要清除当前所有数据？", "Warning", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+      {
+        return;
+      }
+    }
+
+    private void StopBtn_Click(object sender, EventArgs e)
+    {
+      if (null != m_httpThread && null != m_curServer && m_curServer.IsActive)
+      {
+        if (MessageBox.Show("当前已有网络服务正在运行，是否终止当前服务？", "Warning", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+        {
+          return;
+        }
+
+        m_curServer.IsActive = false;
+        while (m_httpThread.IsAlive)
+        {
+          Thread.Sleep(500);
+        }
+        m_curServer = null;
+        m_httpThread = null;
+        ShowOpenGroup(false);
+      }
+    }
+
+    private void Form1_Load(object sender, EventArgs e)
+    {
+      if(DateTime.Now.Hour <= 14)
+      {
+        LunchRad.Checked = true;
+      }
+      else
+      {
+        DinnerRad.Checked = true;
+      }
+      ShowOpenGroup(false);
+    }
+
+    private void ShowOpenGroup(bool bShow)
+    {
+
+      if(bShow)
+      {
+        OpenGroup.Visible = true;
+        this.MaximumSize = Size.Empty;
+        this.MinimumSize = m_bigSize;
+      }
+      else
+      {
+        OpenGroup.Visible = false;
+        this.MinimumSize = m_smallSize;
+        this.MaximumSize = m_smallSize;
+      }
     }
   }
 }

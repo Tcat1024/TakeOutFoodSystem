@@ -293,15 +293,38 @@ body
 		{
 			return;
     	}
-    	var serilazedString = "{name:"+input.value+",length:"+orderArray.length+",";
+    	var serilazedString = "{[name:"+input.value+"],[length:"+orderArray.length+"],";
     	for(var i = 0; i < orderArray.length; ++i)
     	{
-    		serilazedString += "id"+i+":"+orderArray[i].hashid + ",";
-    		serilazedString += "num"+i+":"+orderArray[i].num + ",";
+    		serilazedString += "[id"+i+":"+orderArray[i].hashid + "],";
+    		serilazedString += "[num"+i+":"+orderArray[i].num + "],";
     	}
     	serilazedString += "}";
-        $.ajax({
-            url: "demo1.aspx/AjaxMethod",//发送到本页面后台AjaxMethod方法
+
+    	var xmlhttp;
+		if (window.XMLHttpRequest)
+		{
+		    //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+		    xmlhttp = new XMLHttpRequest();
+		}
+		else
+		{
+		    // IE6, IE5 浏览器执行代码
+		    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange=function(){  
+	        if(xmlhttp.readyState==4){  
+	            //HTTP响应已经完全接收才调用  
+	            if(xmlhttp.responseText == "success")
+	            	alert("提交完成，请勿重复提交");
+	            else
+	            	alert("提交失败:"+xmlhttp.responseText);
+	        }  
+	    };  
+	    xmlhttp.open("post",window.location.href,true);  
+	    xmlhttp.send(serilazedString);  
+        /*$.ajax({
+            url: window.location.href,
             type: "POST",
             dataType: "json",
             async: true,//async翻译为异步的，false表示同步，会等待执行完成，true为异步
@@ -316,7 +339,7 @@ body
             error: function (error) {
                 alert("提交失败:" + error);
             }
-        });
-	}
+        });*/
+	}    
 </script>
 </html>
