@@ -28,11 +28,11 @@ namespace TakeOutSystem
 
     private void PutOutBtn_Click(object sender, EventArgs e)
     {
-      //if(TargetUrlTex.Text.Length <= 0)
-      //{
-      //  MessageBox.Show("请填入外卖网址");
-      //  return;
-      //}
+      if (TargetUrlTex.Text.Length <= 0)
+      {
+        MessageBox.Show("请填入外卖网址");
+        return;
+      }
 
       int curPort = 0;
       if(!int.TryParse(PortTex.Text, out curPort) || curPort <= 0)
@@ -40,31 +40,29 @@ namespace TakeOutSystem
         MessageBox.Show("端口错误");
         return;
       }
-      var curIp = Dns.GetHostAddresses(Dns.GetHostName()).Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).First();
+      float maxPrise;
+      if(!float.TryParse(MaxMoneyTex.Text, out maxPrise))
+      {
+        maxPrise = 1000;
+      }
 
-      string webSiteStr = GenerateWebSite();
+      DataManager.instance.AddNewMenuData("测试1", 28);
+      DataManager.instance.AddNewMenuData("测试2", 38);
+      DataManager.instance.AddNewMenuData("测试3", 4);
+      DataManager.instance.AddNewMenuData("测试2", 38);
+      DataManager.instance.AddNewMenuData("测试1", 26);
+
+      string webSiteStr = WebSiteGenerator.GetWebSiteStr("MMORPG订餐", "紫光园", TargetUrlTex.Text, maxPrise, DataManager.instance.menuData);
       if(webSiteStr == "")
       {
         MessageBox.Show("网页生成失败");
         return;
       }
 
-      if(null != m_httpThread && null != m_curServer &&　m_curServer.IsActive)
-      {
-        if(MessageBox.Show("当前已有网络服务正在运行，是否终止当前服务？", "Warning", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
-        {
-          return;
-        }
-
-        m_curServer.IsActive = false;
-        while (m_httpThread.IsAlive)
-        {
-          Thread.Sleep(500);
-        }
-      }
-      
+      TryStopServer();
+      var curIp = Dns.GetHostAddresses(Dns.GetHostName()).Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).First();
       m_curServer = new MainHttpServer(curIp, curPort);
-      MainHttpServer.WebSetString = webSiteStr;
+      MainHttpServer.webSetString = webSiteStr;
       m_httpThread = new Thread(new ThreadStart(m_curServer.listen));
       m_httpThread.IsBackground = true;
       m_httpThread.Start();
@@ -86,6 +84,8 @@ namespace TakeOutSystem
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
+      DataManager.instance.Release();
+      TryStopServer(true);
     }
 
     private void ClearBtn_Click(object sender, EventArgs e)
@@ -98,22 +98,28 @@ namespace TakeOutSystem
 
     private void StopBtn_Click(object sender, EventArgs e)
     {
-      if (null != m_httpThread && null != m_curServer && m_curServer.IsActive)
+      TryStopServer();
+      ShowOpenGroup(false);
+    }
+
+    private bool TryStopServer(bool bForce = false)
+    {
+      if (null != m_httpThread && null != m_curServer && m_curServer.isActive)
       {
-        if (MessageBox.Show("当前已有网络服务正在运行，是否终止当前服务？", "Warning", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+        if (!bForce && MessageBox.Show("当前已有网络服务正在运行，是否终止当前服务？", "Warning", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
         {
-          return;
+          return false;
         }
 
-        m_curServer.IsActive = false;
+        m_curServer.isActive = false;
         while (m_httpThread.IsAlive)
         {
           Thread.Sleep(500);
         }
         m_curServer = null;
         m_httpThread = null;
-        ShowOpenGroup(false);
       }
+      return true;
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -127,11 +133,19 @@ namespace TakeOutSystem
         DinnerRad.Checked = true;
       }
       ShowOpenGroup(false);
+
+      ShowWait(true, "初始化中,");
+
+      DataManager.instance.Init(this);
+      DetailGrid.DataSource = DataManager.instance.detailDataList;
+      TotalGrid.DataSource = DataManager.instance.totalDataList;
+      DataManager.instance.OnDataChanged += OnDataChanged;
+      WebResourceManager.instance.Init();
+      ShowWait(false);
     }
 
     private void ShowOpenGroup(bool bShow)
     {
-
       if(bShow)
       {
         OpenGroup.Visible = true;
@@ -145,5 +159,30 @@ namespace TakeOutSystem
         this.MaximumSize = m_smallSize;
       }
     }
+
+    private void ShowWait(bool bShow, string desc = "")
+    {
+      if(bShow)
+      {
+        WaitPanel.Show();
+        WaitLabel.Text = desc + "请稍等..";
+        WaitLabel.Location = new Point(Size.Width>>1, Size.Height>>1);
+      }
+      else
+      {
+        WaitPanel.Hide();
+      }
+    }
+    
+    private void OnDataChanged()
+    {
+      DetailGrid.DataSource = new List<DataManager.DetailData>();
+      DetailGrid.DataSource = DataManager.instance.detailDataList;
+      DetailGrid.CurrentCell = null;
+      TotalGrid.DataSource = new List<DataManager.TotalData>();
+      TotalGrid.DataSource = DataManager.instance.totalDataList;
+      TotalGrid.CurrentCell = null;
+    }
+
   }
 }

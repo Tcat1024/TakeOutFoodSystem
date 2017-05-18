@@ -11,29 +11,29 @@ namespace TakeOutSystem
   public abstract class HttpServer
   {
 
-    public bool IsActive = false;
-    protected int port;
-    protected IPAddress ip;
-    TcpListener listener;
+    public bool isActive = false;
+    protected int m_port;
+    protected IPAddress m_ip;
+    private TcpListener m_listener;
 
     public HttpServer(IPAddress ip, int port)
     {
-      this.port = port;
-      this.ip = ip;
+      this.m_port = port;
+      this.m_ip = ip;
     }
 
     public void listen()
     {
       try
       {
-        IsActive = true;
-        listener = new TcpListener(ip, port);
-        listener.Start();
-        while (IsActive)
+        isActive = true;
+        m_listener = new TcpListener(m_ip, m_port);
+        m_listener.Start();
+        while (isActive)
         {
-          var task = listener.AcceptTcpClientAsync();
-          while (IsActive && !task.IsCompleted) ;
-          if(!IsActive)
+          var task = m_listener.AcceptTcpClientAsync();
+          while (isActive && !task.IsCompleted) ;
+          if(!isActive)
             break;
           TcpClient s = task.Result;
           HttpProcessor processor = new HttpProcessor(s, this);
@@ -44,8 +44,8 @@ namespace TakeOutSystem
       }
       finally
       {
-        if(listener!= null)
-          listener.Stop();
+        if(m_listener != null)
+          m_listener.Stop();
       }
     }
 

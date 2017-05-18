@@ -9,19 +9,32 @@ namespace TakeOutSystem
 {
   public class HttpProcessor
   {
+    public enum ContentType
+    {
+      HTML,
+      PNG,
+      XML,
+      NUM
+    }
+
     public TcpClient socket;
     public HttpServer srv;
-
-    private Stream inputStream;
     public StreamWriter outputStream;
+
 
     public String http_method;
     public String http_url;
     public String http_protocol_versionstring;
     public Hashtable httpHeaders = new Hashtable();
 
+    private Stream m_inputStream;
 
-    private static int MAX_POST_SIZE = 10 * 1024 * 1024; // 10MB
+    static private string[] s_contentStrs = new string[] {
+      "text/html",
+      "image/png",
+      "text/xml",
+    };
+    static private int MAX_POST_SIZE = 10 * 1024 * 1024; // 10MB
 
     public HttpProcessor(TcpClient s, HttpServer srv)
     {
@@ -48,7 +61,7 @@ namespace TakeOutSystem
     {
       // we can't use a StreamReader for input, because it buffers up extra data on us inside it's
       // "processed" view of the world, and we want the data raw after the headers
-      inputStream = new BufferedStream(socket.GetStream());
+      m_inputStream = new BufferedStream(socket.GetStream());
       // we probably shouldn't be using a streamwriter for all output from handlers either
       outputStream = new StreamWriter(new BufferedStream(socket.GetStream()));
       try
@@ -71,13 +84,13 @@ namespace TakeOutSystem
       }
       outputStream.Flush();
       // bs.Flush(); // flush any remaining output
-      inputStream = null; outputStream = null; // bs = null;            
+      m_inputStream = null; outputStream = null; // bs = null;    
       socket.Close();
     }
 
     public void parseRequest()
     {
-      String request = streamReadLine(inputStream);
+      String request = streamReadLine(m_inputStream);
       string[] tokens = request.Split(' ');
       if (tokens.Length != 3)
       {
@@ -94,7 +107,7 @@ namespace TakeOutSystem
     {
       Console.WriteLine("readHeaders()");
       String line;
-      while ((line = streamReadLine(inputStream)) != null)
+      while ((line = streamReadLine(m_inputStream)) != null)
       {
         if (line.Equals(""))
         {
@@ -152,7 +165,7 @@ namespace TakeOutSystem
         {
           Console.WriteLine("starting Read, to_read={0}", to_read);
 
-          int numread = this.inputStream.Read(buf, 0, Math.Min(BUF_SIZE, to_read));
+          int numread = this.m_inputStream.Read(buf, 0, Math.Min(BUF_SIZE, to_read));
           Console.WriteLine("read finished, numread={0}", numread);
           if (numread == 0)
           {
@@ -175,10 +188,11 @@ namespace TakeOutSystem
 
     }
 
-    public void writeSuccess()
+    public void writeSuccess(ContentType tarType, int length)
     {
       outputStream.WriteLine("HTTP/1.0 200 OK");
-      outputStream.WriteLine("Content-Type: text/html");
+      //outputStream.WriteLine("Content-Length: {0}", length);
+      outputStream.WriteLine("Content-Type: {0}", s_contentStrs[(int)tarType]);
       outputStream.WriteLine("Connection: close");
       outputStream.WriteLine("");
     }
@@ -188,6 +202,23 @@ namespace TakeOutSystem
       outputStream.WriteLine("HTTP/1.0 404 File not found");
       outputStream.WriteLine("Connection: close");
       outputStream.WriteLine("");
+    }
+
+    static public ContentType GetContentType(string suffix)
+    {
+      suffix = suffix.ToLower();
+      if (suffix[0] != '.')
+        suffix = "." + suffix;
+      switch (suffix)
+      {
+        case ".html":
+          return ContentType.HTML;
+        case ".png":
+          return ContentType.PNG;
+        default:
+          return ContentType.NUM;
+      }
+
     }
   }
 

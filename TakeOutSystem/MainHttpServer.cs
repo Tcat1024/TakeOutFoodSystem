@@ -10,7 +10,7 @@ namespace TakeOutSystem
 {
   public class MainHttpServer : HttpServer
   {
-    public static string WebSetString;
+    public static string webSetString;
     private string m_rootPath;
     public MainHttpServer(IPAddress ip, int port)
             : base(ip, port)
@@ -22,19 +22,18 @@ namespace TakeOutSystem
       Console.WriteLine("request: {0}", p.http_url);
       if(p.http_url == "/")
       {
-        p.writeSuccess();
-        p.outputStream.Write(WebSetString);
+        p.writeSuccess(HttpProcessor.ContentType.HTML, webSetString.Length);
+        p.outputStream.Write(webSetString);
       }
       else
       {
-        string tarPath = m_rootPath + "/wwwroot" + p.http_url;
-        if (File.Exists(tarPath))
+        MemoryStream stream;
+        var tarType = HttpProcessor.GetContentType(p.http_url.Substring(p.http_url.LastIndexOf('.')));
+        if (tarType < HttpProcessor.ContentType.NUM && WebResourceManager.instance.TryGetsource(p.http_url, out stream))
         {
-          p.writeSuccess();
-          using (var file = File.Open(tarPath, FileMode.Open, FileAccess.Read))
-          {
-            file.CopyTo(p.outputStream.BaseStream);
-          }
+          p.writeSuccess(tarType, (int)stream.Length);
+          p.outputStream.Flush();
+          stream.WriteTo(p.outputStream.BaseStream);
         }
         else
         {
@@ -47,7 +46,10 @@ namespace TakeOutSystem
     {
       Console.WriteLine("POST request: {0}", p.http_url);
       string data = inputData.ReadToEnd();
-      p.outputStream.Write(DataManager.Instance.AnalyseOrderData(data));
+      string result = DataManager.instance.AnalyseOrderDataAsyn(data);
+      p.writeSuccess(HttpProcessor.ContentType.XML, result.Length);
+      p.outputStream.Write(result);
+      //p.outputStream.Write();
     }
   }
 }

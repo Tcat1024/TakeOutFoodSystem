@@ -3,27 +3,27 @@
 <head>
 <style type="text/css">
 body
-{
+{{
 	margin-left:20%;
 	margin-right:20%;
-}
-.menu-content {
+}}
+.menu-content {{
 	margin-top:10px;
 	margin-bottom: 10px;
 	font-size: 25px;
-}
-.menu-content-imgs{
+}}
+.menu-content-imgs{{
 	display: inline-block;  
     vertical-align: middle; 
-}
-.menu-content-title{
+}}
+.menu-content-title{{
 	margin-right: 10px;
-}
-.menu-content-prise{
+}}
+.menu-content-prise{{
 	margin-right: 10px;
-}
+}}
 .low-right-cart 
-{ 
+{{ 
 	position: fixed; 
 	background: #eee; 
 	bottom: 40px; 
@@ -34,8 +34,8 @@ body
 	padding: 10px; 
 	margin-bottom: 10px; 
 	margin-right: 20%;
-}
-.btn {
+}}
+.btn {{
 	position:relative;
 	cursor: pointer;
 	background: white;
@@ -53,58 +53,49 @@ body
 
 	/* Smoothing out hover using css3 transitions, if not, the pressed button effect looks a bit hard */
 	transition: all 0.2s ease;
-}
+}}
 
-.btn-small {
+.btn-small {{
 	line-height: 36px;
 	width: 78px;
 	height: 36px;
 	margin-left: -39px;
-}
-.submit_disable{
+}}
+.submit_disable{{
 	background: #686868;
 	box-shadow: 0px 5px #2f2f2f;
-}
-.submit {
+}}
+.submit {{
 	background: #b7de01;
 	box-shadow: 0px 5px #687e00;
 	color: #687e00;
-}
-.submit:hover {
+}}
+.submit:hover {{
 	background: #99ba01;
 	box-shadow: 0px 4px #435100;
 	color: #687e00;
-}
+}}
 /* Imitate a pressed effect for buttons */
-.submit:active {
+.submit:active {{
 	box-shadow: 0px 0px #717a33;
 	top: 4px;
-}
+}}
 </style>
-<title>MMORPG订餐</title>
+<title>{0}</title>
 </head>
 <body>
-<div>紫光园</div>
+<div>{1}</div>
 <div>
 <span>参考限额:</span>
-<span id = "targetcash">40</span>
+<span id = "targetcash">{2}</span>
 </div>
 <div>
 <span>请输入您的姓名：</span>
 <span><input type="text" id="nameinput" name = "name"/></span>
 </div>
-<div><a href="https://waimai.baidu.com/waimai/shop/1572172285">网址点此</a></div>
+<div><a href="{3}">网址点此</a></div>
 <div class = "menu-list">
-	<div class = "menu-content">
-		<span id = "name" class="menu-content-title" data-hashid = 1>鱼香肉丝单人份</span>
-		<strong>¥</strong>
-		<strong id = "prise" class="menu-content-prise">28</strong>
-		<span id = "hidden" style="visibility: hidden;">
-		<img class = "menu-content-imgs" src="imgs/del.png" height="40" width="40" onclick="OnDeleteClick(this)"/>
-		<strong id = "num">0</strong>
-		</span>
-		<img class = "menu-content-imgs" src="imgs/add.png" height="40" width="40" onclick="OnAddClick(this)" />
-	</div>
+	{4}
 </div>
 <div class = "low-right-cart">
 <div>已点:</div>
@@ -128,7 +119,7 @@ body
 </div>
 </body>
 <script>
-	var orderTable = {};
+	var orderTable = {{}};
 	var orderArray = new Array();
 	var cartList = document.getElementById("cart");
 	var template = document.getElementById("carttemplate");
@@ -139,20 +130,20 @@ body
 	var input = document.getElementById("nameinput");
 	var submitbtn = document.getElementById("submitbtn");
 	function OnAddClick(paramater)
-	{
+	{{
 		Add(paramater.parentNode);
-	}
+	}}
 	function Add(node)
-	{
+	{{
 		var name;
 		var num; 
 		var prise;
 		var hashid;
 		var children = node.children || node.childNodes;
 		for(var i = 0; i < children.length; ++i)
-		{
+		{{
 			switch(children[i].id)
-			{
+			{{
 				case "name":
 					name = children[i].innerHTML;
 					hashid = children[i].getAttribute("data-hashid");
@@ -165,29 +156,29 @@ body
 					num = (parseInt(hiddenChildren[1].innerHTML) || 0) + 1;
 					hiddenChildren[1].innerHTML = String(num);
 					if(num > 0)
-					{
+					{{
 						children[i].style.visibility = "visible";
-					}
+					}}
 					break;
-			}
-		}
+			}}
+		}}
 		OnDishNumChange(node, name, num, prise, hashid);
-	}
+	}}
 	function OnDeleteClick(paramater)
-	{
+	{{
 		Delete(paramater.parentNode.parentNode);
-	}
+	}}
 	function Delete(node)
-	{
+	{{
 		var name;
 		var num; 
 		var prise;
 		var hashid;
 		var children = node.children || node.childNodes;
 		for(var i = 0; i < children.length; ++i)
-		{
+		{{
 			switch(children[i].id)
-			{
+			{{
 				case "name":
 					name = children[i].innerHTML;
 					hashid = children[i].getAttribute("data-hashid");
@@ -200,66 +191,66 @@ body
 					num = Math.max((parseInt(hiddenChildren[1].innerHTML) || 0) - 1, 0);
 					hiddenChildren[1].innerHTML = String(num);
 					if(num == 0)
-					{
+					{{
 						children[i].style.visibility = "hidden";
-					}
+					}}
 					break;
-			}
-		}
+			}}
+		}}
 		OnDishNumChange(node, name, num, prise, hashid);
-	}
+	}}
 	function AddFromCart(paramater)
-	{
+	{{
 		var idx = paramater.parentNode.getAttribute("data-idx");
 		Add(orderArray[idx].node);
-	}
+	}}
 	function DeleteFromCart(paramater)
-	{
+	{{
 		var idx = paramater.parentNode.getAttribute("data-idx");
 		Delete(orderArray[idx].node);
-	}
+	}}
 	function OnDishNumChange(paramater, name, num, prise, hashid)
-	{
+	{{
 		var idx = orderTable[hashid];
 		totalnum = 0
 		if(num <= 0)
-		{
+		{{
 			if(idx == null)
 				return;
 			orderArray.splice(idx,1);
-		}
+		}}
 		else
-		{
+		{{
 			if(idx == null)
-			{
+			{{
 				idx = orderArray.length;
 				orderTable[hashid] = idx;
-			}
+			}}
 			orderArray[idx] = 
-			{
+			{{
 				node:paramater,
 				name:name,
 				num:num,
 				prise:prise,
 				hashid:hashid
-			}
-		}
+			}}
+		}}
 		var children = cartList.children || cartList.childNodes;
 		for(var i = 0; i < orderArray.length; ++i)
-		{
+		{{
 			var target = children[i];
 			if(target == null)
-			{
+			{{
 				target = template.cloneNode(true);
 				target.setAttribute("data-idx", i);
 				cartList.appendChild(target);
-			}
+			}}
 			target.style.display = "";
 			var nodes = target.children || target.childNodes;
 			for(var j = 0; j < nodes.length; ++j)
-			{
+			{{
 				switch(nodes[j].id)
-				{
+				{{
 					case "name":
 						nodes[j].innerHTML = orderArray[i].name;
 						break;
@@ -269,77 +260,77 @@ body
 					case "num":
 						nodes[j].innerHTML = orderArray[i].num;
 						break;
-				}
-			}
+				}}
+			}}
 			totalnum += orderArray[i].prise * orderArray[i].num;
-		}
+		}}
 		for(var i = orderArray.length; i < children.length; ++i)
-		{
+		{{
 			children[i].style.display = "none";
-		}
+		}}
 		totalcash.innerHTML = totalnum;
 		submitbtn.setAttribute("class", orderArray.length > 0 ? "btn btn-small submit": "btn btn-small submit_disable");
-	}
+	}}
 	function Submit()
-	{
+	{{
 		if(orderArray.length <= 0)
 			return;
 		if(input.value.length <= 0)
-		{
+		{{
 			alert("请输入姓名！");
 			return;
-		}
+		}}
 		if(targetcash < totalnum && ~confirm("当前总额超出标准"+ (totalnum - targetcash) +"元，是否确认提交？"))
-		{
+		{{
 			return;
-    	}
-    	var serilazedString = "{[name:"+input.value+"],[length:"+orderArray.length+"],";
+    	}}
+    	var serilazedString = "{{[name:"+input.value+"],[length:"+orderArray.length+"],";
     	for(var i = 0; i < orderArray.length; ++i)
-    	{
+    	{{
     		serilazedString += "[id"+i+":"+orderArray[i].hashid + "],";
     		serilazedString += "[num"+i+":"+orderArray[i].num + "],";
-    	}
-    	serilazedString += "}";
+    	}}
+    	serilazedString += "}}";
 
     	var xmlhttp;
 		if (window.XMLHttpRequest)
-		{
+		{{
 		    //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
 		    xmlhttp = new XMLHttpRequest();
-		}
+		}}
 		else
-		{
+		{{
 		    // IE6, IE5 浏览器执行代码
 		    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		}
-		xmlhttp.onreadystatechange=function(){  
-	        if(xmlhttp.readyState==4){  
+		}}
+		xmlhttp.onreadystatechange=function(){{  
+	        if(xmlhttp.readyState==4){{  
 	            //HTTP响应已经完全接收才调用  
 	            if(xmlhttp.responseText == "success")
 	            	alert("提交完成，请勿重复提交");
 	            else
 	            	alert("提交失败:"+xmlhttp.responseText);
-	        }  
-	    };  
+	        }}  
+	    }};  
 	    xmlhttp.open("post",window.location.href,true);  
 	    xmlhttp.send(serilazedString);  
-        /*$.ajax({
+        /*$.ajax({{
             url: window.location.href,
             type: "POST",
             dataType: "json",
             async: true,//async翻译为异步的，false表示同步，会等待执行完成，true为异步
             contentType: "application/json; charset=utf-8",//不可少
             data: serilazedString,
-            success: function (data) {
+            success: function (data) {{
                 alert("提交完成，请勿重复提交");
 		    	window.opener=null;
 				window.open('','_self');
 				window.close();
-            },
-            error: function (error) {
+            }},
+            error: function (error) {{
                 alert("提交失败:" + error);
-            }
-        });*/
-	}    
+            }}
+        }});*/
+	}}    
 </script>
 </html>
