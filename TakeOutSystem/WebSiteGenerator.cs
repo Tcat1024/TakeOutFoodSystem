@@ -32,7 +32,7 @@ namespace TakeOutSystem
       {
         contentBuilder.AppendFormat(contentTemplate, data.id, data.name, data.prise);
       }
-      return string.Format(result, title, restName, priseMax, targetWebSite, contentBuilder.ToString());
+      return string.Format(result, title, restName, priseMax <= 0 ? "" : priseMax.ToString(), targetWebSite, contentBuilder.ToString());
     }
   }
 }

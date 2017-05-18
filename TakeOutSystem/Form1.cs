@@ -20,6 +20,7 @@ namespace TakeOutSystem
     private Size m_bigSize = new Size(1007, 705);
     private Thread m_httpThread;
     private HttpServer m_curServer;
+    private float m_maxPrise = -1;
     public Form1()
     {
       InitializeComponent();
@@ -40,11 +41,6 @@ namespace TakeOutSystem
         MessageBox.Show("端口错误");
         return;
       }
-      float maxPrise;
-      if(!float.TryParse(MaxMoneyTex.Text, out maxPrise))
-      {
-        maxPrise = 1000;
-      }
 
       DataManager.instance.AddNewMenuData("测试1", 28);
       DataManager.instance.AddNewMenuData("测试2", 38);
@@ -52,7 +48,7 @@ namespace TakeOutSystem
       DataManager.instance.AddNewMenuData("测试2", 38);
       DataManager.instance.AddNewMenuData("测试1", 26);
 
-      string webSiteStr = WebSiteGenerator.GetWebSiteStr("MMORPG订餐", "紫光园", TargetUrlTex.Text, maxPrise, DataManager.instance.menuData);
+      string webSiteStr = WebSiteGenerator.GetWebSiteStr("MMORPG订餐", "紫光园", TargetUrlTex.Text, m_maxPrise, DataManager.instance.menuData);
       if(webSiteStr == "")
       {
         MessageBox.Show("网页生成失败");
@@ -99,7 +95,8 @@ namespace TakeOutSystem
     private void StopBtn_Click(object sender, EventArgs e)
     {
       TryStopServer();
-      ShowOpenGroup(false);
+      if(null == DataManager.instance.ordersDataTable ||DataManager.instance.ordersDataTable.Rows.Count <= 0)
+        ShowOpenGroup(false);
     }
 
     private bool TryStopServer(bool bForce = false)
@@ -137,11 +134,18 @@ namespace TakeOutSystem
       ShowWait(true, "初始化中,");
 
       DataManager.instance.Init(this);
-      DetailGrid.DataSource = DataManager.instance.detailDataList;
-      TotalGrid.DataSource = DataManager.instance.totalDataList;
-      DataManager.instance.OnDataChanged += OnDataChanged;
+      DetailGrid.DataSource = DataManager.instance.detailDataTable.DefaultView;
+      OrderGrid.DataSource = DataManager.instance.ordersDataTable.DefaultView;
+      //TotalGrid.DataSource = DataManager.instance.totalDataList;
       WebResourceManager.instance.Init();
       ShowWait(false);
+      splitContainer1.SplitterDistance = (int)(splitContainer1.Width * 0.7);
+      splitContainer2.SplitterDistance = (int)(splitContainer2.Height * 0.7);
+
+      if (!float.TryParse(MaxMoneyTex.Text, out m_maxPrise))
+      {
+        m_maxPrise = -1;
+      }
     }
 
     private void ShowOpenGroup(bool bShow)
@@ -173,16 +177,50 @@ namespace TakeOutSystem
         WaitPanel.Hide();
       }
     }
-    
-    private void OnDataChanged()
+
+    private void DetailGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
     {
-      DetailGrid.DataSource = new List<DataManager.DetailData>();
-      DetailGrid.DataSource = DataManager.instance.detailDataList;
-      DetailGrid.CurrentCell = null;
-      TotalGrid.DataSource = new List<DataManager.TotalData>();
-      TotalGrid.DataSource = DataManager.instance.totalDataList;
-      TotalGrid.CurrentCell = null;
+      var detailTable = DataManager.instance.detailDataTable;
+      var orderTable = DataManager.instance.ordersDataTable;
+      if (null == detailTable || null == orderTable || e.RowIndex < 0 || e.RowIndex >= detailTable.Rows.Count)
+      {
+        return;
+      }
+      var tarRow = detailTable.Rows[e.RowIndex];
+      orderTable.DefaultView.RowFilter = "customer = '"+ tarRow["name"] + "'";
     }
 
+    private void MaxMoneyTex_TextChanged(object sender, EventArgs e)
+    {
+      if(!float.TryParse(MaxMoneyTex.Text, out m_maxPrise))
+      {
+        m_maxPrise = -1;
+      }
+      DetailGrid.Refresh();
+    }
+
+    private void DetailGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+    {
+      if(m_maxPrise > 0 && e.ColumnIndex >= 0 &&　e.ColumnIndex < DetailGrid.Columns.Count && DetailGrid.Columns[e.ColumnIndex].Name == "totalPrise")
+      {
+        var tarCell = DetailGrid.Rows[e.RowIndex].Cells[e.ColumnIndex];
+        if(m_maxPrise < (float)tarCell.Value)
+        {
+          tarCell.Style.BackColor = System.Drawing.Color.Red;
+        }
+        else
+        {
+          tarCell.Style.BackColor = tarCell.OwningRow.DefaultCellStyle.BackColor;
+        }
+      }
+    }
+
+    private void DetailGrid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+    {
+      if (m_maxPrise > 0 && e.ColumnIndex == 1 && e.Value is float && (float)e.Value > m_maxPrise)
+      {
+        e.CellStyle.BackColor = Color.Red;
+      }
+    }
   }
 }

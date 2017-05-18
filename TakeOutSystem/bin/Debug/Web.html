@@ -113,7 +113,7 @@ body
 <span>总金额:	</span>
 <span id = "totalcash">0</span>
 </div>
-<div id = "submitbtn" class = "btn btn-small submit_disable" onclick="Submit()">
+<div id = "submitbtn" class = "btn btn-small submit" onclick="Submit()">
 <span>提交</span>
 </div>
 </div>
@@ -126,7 +126,7 @@ body
 	var totalcash = document.getElementById("totalcash");
 	template.style.display = "none";
 	var totalnum = 0;
-	var targetcash = parseInt(document.getElementById("targetcash").innerHTML);
+	var targetcash = parseFloat(document.getElementById("targetcash").innerHTML);
 	var input = document.getElementById("nameinput");
 	var submitbtn = document.getElementById("submitbtn");
 	function OnAddClick(paramater)
@@ -211,29 +211,45 @@ body
 	}}
 	function OnDishNumChange(paramater, name, num, prise, hashid)
 	{{
-		var idx = orderTable[hashid];
+		var target = orderTable[hashid];
 		totalnum = 0
 		if(num <= 0)
 		{{
-			if(idx == null)
+			if(target == null)
 				return;
-			orderArray.splice(idx,1);
+			for(var i = 0; i < orderArray.length; ++i)
+			{{
+				if(orderArray[i] == target)
+				{{
+					orderArray.splice(i,1);
+					break;
+				}}
+			}}
+			orderTable[hashid] = null;
 		}}
 		else
 		{{
-			if(idx == null)
+			if(target == null)
 			{{
-				idx = orderArray.length;
-				orderTable[hashid] = idx;
+				target = 
+				{{
+					node:paramater,
+					name:name,
+					num:num,
+					prise:prise,
+					hashid:hashid
+				}}
+				orderArray[orderArray.length] = target
+				orderTable[hashid] = target
 			}}
-			orderArray[idx] = 
+			else
 			{{
-				node:paramater,
-				name:name,
-				num:num,
-				prise:prise,
-				hashid:hashid
+				target["node"] = paramater;
+				target["name"] = name;
+				target["num"] = num;
+				target["prise"] = prise;
 			}}
+			
 		}}
 		var children = cartList.children || cartList.childNodes;
 		for(var i = 0; i < orderArray.length; ++i)
@@ -269,18 +285,16 @@ body
 			children[i].style.display = "none";
 		}}
 		totalcash.innerHTML = totalnum;
-		submitbtn.setAttribute("class", orderArray.length > 0 ? "btn btn-small submit": "btn btn-small submit_disable");
+		//submitbtn.setAttribute("class", orderArray.length > 0 ? "btn btn-small submit": "btn btn-small submit_disable");
 	}}
 	function Submit()
 	{{
-		if(orderArray.length <= 0)
-			return;
 		if(input.value.length <= 0)
 		{{
 			alert("请输入姓名！");
 			return;
 		}}
-		if(targetcash < totalnum && ~confirm("当前总额超出标准"+ (totalnum - targetcash) +"元，是否确认提交？"))
+		if(NaN != targetcash && targetcash < totalnum && ~confirm("当前总额超出标准"+ (totalnum - targetcash) +"元，是否确认提交？"))
 		{{
 			return;
     	}}

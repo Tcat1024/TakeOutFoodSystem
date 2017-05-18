@@ -36,23 +36,6 @@ namespace TakeOutSystem
       }
     }
 
-    public class DetailData
-    {
-      public string name { get; set; }
-      public List<Tuple<int, int>> orders { get; set; }
-      public string detailStr { get; set; }
-      public float totalPrise { get; set; }
-    }
-
-    public class TotalData
-    {
-      public int id { get; set; }
-      public string name { get; set; }
-      public float prise { get; set; }
-      public int num { get; set; }
-    }
-
-
     public List<MenuData> menuData
     {
       get
@@ -61,9 +44,9 @@ namespace TakeOutSystem
       }
     }
 
-    public List<DetailData> detailDataList = new List<DetailData>();
-    public List<TotalData> totalDataList = new List<TotalData>();
-
+    public DataTable detailDataTable;
+    public DataTable ordersDataTable;
+    public DataTable totalDataTable;
     public delegate void DataChangedEventHandler();
     public event DataChangedEventHandler OnDataChanged;
 
@@ -76,9 +59,9 @@ namespace TakeOutSystem
     }
 
     private delegate void InvokeDelegate();
+    private DataSet m_allDataSet = new DataSet();
     private List<MenuData> m_menuData = new List<MenuData>();
     private Dictionary<string, List<float>> m_dicMenuPrises = new Dictionary<string, List<float>>();
-    private Dictionary<string, int> m_dicDetailName = new Dictionary<string, int>();
     private InterlockedQueue<AnalysedData> m_analysedDatas = new InterlockedQueue<AnalysedData>();
     private Thread m_refreshThread;
     private Control m_mainThreadControl;
@@ -106,7 +89,23 @@ namespace TakeOutSystem
     public bool Init(Control mainControl)
     {
       m_mainThreadControl = mainControl;
+      m_allDataSet.Tables.Clear();
+      detailDataTable = m_allDataSet.Tables.Add("details");
+      ordersDataTable = m_allDataSet.Tables.Add("orders");
+      ordersDataTable.Columns.Add(new DataColumn("customer", typeof(string)));
+      ordersDataTable.Columns.Add(new DataColumn("order_id", typeof(int)));
+      ordersDataTable.Columns.Add(new DataColumn("order_name", typeof(string)));
+      ordersDataTable.Columns.Add(new DataColumn("order_prise", typeof(float)));
+      ordersDataTable.Columns.Add(new DataColumn("order_num", typeof(int)));
+      ordersDataTable.Columns.Add(new DataColumn("total_prise", typeof(float), "order_prise*order_num"));
+      ordersDataTable.PrimaryKey = new DataColumn[] { ordersDataTable.Columns["customer"], ordersDataTable.Columns["order_id"] };
 
+      detailDataTable.Columns.Add(new DataColumn("name", typeof(string)));
+
+      m_allDataSet.Relations.Add("customer_name", detailDataTable.Columns["name"], ordersDataTable.Columns["customer"]);
+      detailDataTable.Columns.Add(new DataColumn("total_prise", typeof(float), "Sum(Child.total_prise)"));
+      detailDataTable.PrimaryKey = new DataColumn[] { detailDataTable.Columns["name"] };
+      ordersDataTable.DefaultView.RowFilter = "customer = ''";
       if (null == m_refreshThread)
       {
         m_refreshThread = new Thread(RefreshThread);
@@ -155,20 +154,16 @@ namespace TakeOutSystem
 
     public string AnalyseOrderDataAsyn(string serilizedStr)
     {
-      //if(m_menuData.Keys.Count <= 0)
-      //{
-      //  return "Error：未录入菜单，请联系服务器";
-      //}
+      if (m_menuData.Count <= 0)
+      {
+        return "Error：未录入菜单，请联系服务器";
+      }
       Match nameMatch = Regex.Match(serilizedStr, @"\[name:(\S+?)\]");
       if (!nameMatch.Success || nameMatch.Groups.Count <= 0)
         return "Error：姓名不正确";
 
       string name = nameMatch.Groups[1].Value;
       var anaResult = Regex.Matches(serilizedStr, @"\[id\S+?:(\d+?)\],\[num\S+?:(\d+?)\]");
-      if(anaResult.Count <= 0)
-      {
-        return "Error：解析错误";
-      }
       List<Tuple<int, int>> orderList = new List<Tuple<int, int>>();
       foreach (Match match in anaResult)
       {
@@ -184,8 +179,10 @@ namespace TakeOutSystem
 
     public void Clear()
     {
-      detailDataList.Clear();
-      totalDataList.Clear();
+      foreach(DataTable table in m_allDataSet.Tables)
+      {
+        table.Rows.Clear();
+      }
     }
 
     private void RefreshThread()
@@ -201,80 +198,80 @@ namespace TakeOutSystem
 
     private void InvokeMethod()
     {
+      if (detailDataTable == null || ordersDataTable == null)
+        return;
       bool bChanged = false;
       AnalysedData data;
+      detailDataTable.BeginLoadData();
+      ordersDataTable.BeginLoadData();
       while (m_analysedDatas.TryDequeue(out data))
       {
         if (!bChanged)
           bChanged = true;
-        DetailData detail;
-        int idx;
-        if(!m_dicDetailName.TryGetValue(data.name, out idx))
+        DataRow tarRow = null;
+        if ((tarRow = detailDataTable.Rows.Find(data.name)) == null)
         {
-          if(null == data.orders || data.orders.Count <= 0)
-          {
+          if (data.orders.Count <= 0)
             continue;
+          bool trueAdd = false;
+          foreach(var order in data.orders)
+          {
+            if (order.Item1 < 0 || order.Item1 >= m_menuData.Count)
+              continue;
+            if (!trueAdd)
+            {
+              trueAdd = true;
+              tarRow = detailDataTable.NewRow();
+              tarRow["name"] = data.name;
+              detailDataTable.Rows.Add(tarRow);
+            }
+            var menudata = m_menuData[order.Item1];
+            var newRow = ordersDataTable.NewRow();
+            newRow["customer"] = data.name;
+            newRow["order_id"] = order.Item1;
+            newRow["order_name"] = menudata.name;
+            newRow["order_prise"] = menudata.prise;
+            newRow["order_num"] = order.Item2;
+            ordersDataTable.Rows.Add(newRow);
           }
-          detail = new DetailData();
-          detail.name = data.name;
-          m_dicDetailName[data.name] = detailDataList.Count;
-          detailDataList.Add(detail);
         }
         else
         {
-          if (null == data.orders || data.orders.Count <= 0)
+          DataRow[] childRows = tarRow.GetChildRows("customer_name");
+          foreach (var childRow in childRows)
           {
-            m_dicDetailName.Remove(data.name);
-            detailDataList.RemoveAt(idx);
+            ordersDataTable.Rows.Remove(childRow);
+          }
+          if (data.orders.Count <= 0)
+          {
+            detailDataTable.Rows.Remove(tarRow);
             continue;
           }
-          detail = detailDataList[idx];
-        }
-        detail.orders = data.orders;
-        
-        StringBuilder builder = new StringBuilder();
-        float totalPrise = 0f;
-        foreach (var order in detail.orders)
-        {
-          if (order.Item1 < 0 || order.Item1 >= m_menuData.Count)
+          bool trueAdd = false;
+          foreach (var order in data.orders)
           {
+            if (order.Item1 < 0 || order.Item1 >= m_menuData.Count)
+              continue;
+            if (!trueAdd)
+              trueAdd = true;
+            var menudata = m_menuData[order.Item1];
+            var newRow = ordersDataTable.NewRow();
+            newRow["customer"] = data.name;
+            newRow["order_id"] = order.Item1;
+            newRow["order_name"] = menudata.name;
+            newRow["order_prise"] = menudata.prise;
+            newRow["order_num"] = order.Item2;
+            ordersDataTable.Rows.Add(newRow);
+          }
+          if(!trueAdd)
+          {
+            detailDataTable.Rows.Remove(tarRow);
             continue;
           }
-          var tarData = m_menuData[order.Item1];
-          builder.Append(tarData.name);
-          builder.Append("(");
-          builder.Append(tarData.prise);
-          builder.Append(")x");
-          builder.Append(order.Item2);
-          totalPrise += tarData.prise * order.Item2;
         }
-        detail.detailStr = builder.ToString();
-        detail.totalPrise = totalPrise;
       }
-      if (bChanged)
-      {
-        totalDataList.Clear();
-        int[] nums = new int[m_menuData.Count];
-        foreach(var detail in detailDataList)
-        {
-          foreach(var order in detail.orders)
-          {
-            nums[order.Item1] += order.Item2;
-          }
-        }
-        for(int i= 0; i < nums.Length; ++i)
-        {
-          if (nums[i] <= 0)
-            continue;
-          var total = new TotalData();
-          total.id = i;
-          total.name = m_menuData[i].name;
-          total.num = nums[i];
-          total.prise = m_menuData[i].prise;
-          totalDataList.Add(total);
-        }
-        OnDataChanged();
-      }
+      detailDataTable.EndLoadData();
+      ordersDataTable.EndLoadData();
     }
   }
 }
