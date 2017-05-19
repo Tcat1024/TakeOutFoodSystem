@@ -38,6 +38,7 @@ namespace TakeOutSystem
           TcpClient s = task.Result;
           HttpProcessor processor = new HttpProcessor(s, this);
           Thread thread = new Thread(new ThreadStart(processor.process));
+          thread.IsBackground = true;
           thread.Start();
           Thread.Sleep(1);
         }

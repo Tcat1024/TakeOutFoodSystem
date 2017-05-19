@@ -30,7 +30,7 @@ namespace TakeOutSystem
       StringBuilder contentBuilder = new StringBuilder();
       foreach(var data in menuDatas)
       {
-        contentBuilder.AppendFormat(contentTemplate, data.id, data.name, data.prise);
+        contentBuilder.AppendFormat(contentTemplate, data.id, data.name, data.prise, data.has_ex.ToString());
       }
       return string.Format(result, title, restName, priseMax <= 0 ? "" : priseMax.ToString(), targetWebSite, contentBuilder.ToString());
     }

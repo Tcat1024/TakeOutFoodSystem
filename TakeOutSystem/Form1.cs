@@ -42,11 +42,11 @@ namespace TakeOutSystem
         return;
       }
 
-      DataManager.instance.AddNewMenuData("测试1", 28);
-      DataManager.instance.AddNewMenuData("测试2", 38);
-      DataManager.instance.AddNewMenuData("测试3", 4);
-      DataManager.instance.AddNewMenuData("测试2", 38);
-      DataManager.instance.AddNewMenuData("测试1", 26);
+      DataManager.instance.AddNewMenuData("测试1", 28, true);
+      DataManager.instance.AddNewMenuData("测试2", 38, true);
+      DataManager.instance.AddNewMenuData("测试3", 4, false);
+      DataManager.instance.AddNewMenuData("测试2", 38, true);
+      DataManager.instance.AddNewMenuData("测试1", 26, true);
 
       string webSiteStr = WebSiteGenerator.GetWebSiteStr("MMORPG订餐", "紫光园", TargetUrlTex.Text, m_maxPrise, DataManager.instance.menuData);
       if(webSiteStr == "")
@@ -136,10 +136,10 @@ namespace TakeOutSystem
       DataManager.instance.Init(this);
       DetailGrid.DataSource = DataManager.instance.detailDataTable.DefaultView;
       OrderGrid.DataSource = DataManager.instance.ordersDataTable.DefaultView;
-      //TotalGrid.DataSource = DataManager.instance.totalDataList;
+      TotalGrid.DataSource = DataManager.instance.totalDataTable.DefaultView;
       WebResourceManager.instance.Init();
       ShowWait(false);
-      splitContainer1.SplitterDistance = (int)(splitContainer1.Width * 0.7);
+      splitContainer1.SplitterDistance = (int)(splitContainer1.Width * 0.6);
       splitContainer2.SplitterDistance = (int)(splitContainer2.Height * 0.7);
 
       if (!float.TryParse(MaxMoneyTex.Text, out m_maxPrise))
@@ -217,7 +217,7 @@ namespace TakeOutSystem
 
     private void DetailGrid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
     {
-      if (m_maxPrise > 0 && e.ColumnIndex == 1 && e.Value is float && (float)e.Value > m_maxPrise)
+      if (m_maxPrise > 0 && e.ColumnIndex == 2 && e.Value is float && (float)e.Value > m_maxPrise)
       {
         e.CellStyle.BackColor = Color.Red;
       }

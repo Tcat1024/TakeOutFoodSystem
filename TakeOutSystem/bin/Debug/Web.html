@@ -136,60 +136,69 @@ body
 	function Add(node)
 	{{
 		var name;
-		var num; 
+		var num = Math.max((parseInt(node.getAttribute("data-num")) || 0) + 1, 0); 
+		node.setAttribute("data-num", num);
 		var prise;
-		var hashid;
+		var hashid = node.getAttribute("data-hashid");
 		var children = node.children || node.childNodes;
+		var ex = "";
 		for(var i = 0; i < children.length; ++i)
 		{{
 			switch(children[i].id)
 			{{
 				case "name":
 					name = children[i].innerHTML;
-					hashid = children[i].getAttribute("data-hashid");
 					break;
 				case "prise":
 					prise = children[i].innerHTML;
 					break;
+				case "num":
+					children[i].innerHTML = String(num);
 				case "hidden":
-					var hiddenChildren = children[i].children || children[i].childNodes;
-					num = (parseInt(hiddenChildren[1].innerHTML) || 0) + 1;
-					hiddenChildren[1].innerHTML = String(num);
 					if(num > 0)
+					{{
+						children[i].style.visibility = "visible";
+					}}
+					break;
+				case "ex":
+					ex = children[i].value;
+					if(num > 0 && children[i].getAttribute("data-allow").toLowerCase() == "true")
 					{{
 						children[i].style.visibility = "visible";
 					}}
 					break;
 			}}
 		}}
-		OnDishNumChange(node, name, num, prise, hashid);
+		OnDishNumChange(node, name, num, prise, hashid, ex);
 	}}
 	function OnDeleteClick(paramater)
 	{{
-		Delete(paramater.parentNode.parentNode);
+		Delete(paramater.parentNode);
 	}}
 	function Delete(node)
 	{{
 		var name;
-		var num; 
+		var num = Math.max((parseInt(node.getAttribute("data-num")) || 0) - 1, 0); 
+		node.setAttribute("data-num", num);
 		var prise;
-		var hashid;
+		var hashid = node.getAttribute("data-hashid");
 		var children = node.children || node.childNodes;
+		var ex = "";
 		for(var i = 0; i < children.length; ++i)
 		{{
 			switch(children[i].id)
 			{{
 				case "name":
 					name = children[i].innerHTML;
-					hashid = children[i].getAttribute("data-hashid");
 					break;
 				case "prise":
 					prise = children[i].innerHTML;
 					break;
+				case "num":
+					children[i].innerHTML = String(num);
+				case "ex":
+					ex = children[i].value;
 				case "hidden":
-					var hiddenChildren = children[i].children || children[i].childNodes;
-					num = Math.max((parseInt(hiddenChildren[1].innerHTML) || 0) - 1, 0);
-					hiddenChildren[1].innerHTML = String(num);
 					if(num == 0)
 					{{
 						children[i].style.visibility = "hidden";
@@ -197,7 +206,7 @@ body
 					break;
 			}}
 		}}
-		OnDishNumChange(node, name, num, prise, hashid);
+		OnDishNumChange(node, name, num, prise, hashid, ex);
 	}}
 	function AddFromCart(paramater)
 	{{
@@ -209,7 +218,7 @@ body
 		var idx = paramater.parentNode.getAttribute("data-idx");
 		Delete(orderArray[idx].node);
 	}}
-	function OnDishNumChange(paramater, name, num, prise, hashid)
+	function OnDishNumChange(paramater, name, num, prise, hashid, ex)
 	{{
 		var target = orderTable[hashid];
 		totalnum = 0
@@ -237,7 +246,8 @@ body
 					name:name,
 					num:num,
 					prise:prise,
-					hashid:hashid
+					hashid:hashid,
+					ex:ex
 				}}
 				orderArray[orderArray.length] = target
 				orderTable[hashid] = target
@@ -248,6 +258,7 @@ body
 				target["name"] = name;
 				target["num"] = num;
 				target["prise"] = prise;
+				target["ex"] = ex;
 			}}
 			
 		}}
@@ -255,12 +266,14 @@ body
 		for(var i = 0; i < orderArray.length; ++i)
 		{{
 			var target = children[i];
+			var tarOrder = orderArray[i];
 			if(target == null)
 			{{
 				target = template.cloneNode(true);
 				target.setAttribute("data-idx", i);
 				cartList.appendChild(target);
 			}}
+			tarOrder.cartnode = target;
 			target.style.display = "";
 			var nodes = target.children || target.childNodes;
 			for(var j = 0; j < nodes.length; ++j)
@@ -268,13 +281,13 @@ body
 				switch(nodes[j].id)
 				{{
 					case "name":
-						nodes[j].innerHTML = orderArray[i].name;
+						nodes[j].innerHTML = tarOrder.ex.length <= 0 ? tarOrder.name : tarOrder.name + "(" + tarOrder.ex +")";
 						break;
 					case "prise":
-						nodes[j].innerHTML = orderArray[i].prise;
+						nodes[j].innerHTML = tarOrder.prise;
 						break;
 					case "num":
-						nodes[j].innerHTML = orderArray[i].num;
+						nodes[j].innerHTML = tarOrder.num;
 						break;
 				}}
 			}}
@@ -287,6 +300,29 @@ body
 		totalcash.innerHTML = totalnum;
 		//submitbtn.setAttribute("class", orderArray.length > 0 ? "btn btn-small submit": "btn btn-small submit_disable");
 	}}
+
+	function OnExChange(paramater)
+	{{
+		var parent = paramater.parentNode;
+		var hash_id = parent.getAttribute("data-hashid");
+		var tarOrder = orderTable[hash_id];
+		if(null == tarOrder)
+			return;
+		var cartnode = tarOrder["cartnode"];
+		if(null == cartnode)
+			return;
+		tarOrder.ex = paramater.value;
+		var nodes = cartnode.children || cartnode.childNodes;
+		for(var j = 0; j < nodes.length; ++j)
+		{{
+			if(nodes[j].id == "name")
+			{{
+				nodes[j].innerHTML = tarOrder.ex.length <= 0 ? tarOrder.name : tarOrder.name + "(" + tarOrder.ex +")";
+				break;
+			}}
+		}}
+	}}
+
 	function Submit()
 	{{
 		if(input.value.length <= 0)
@@ -303,6 +339,7 @@ body
     	{{
     		serilazedString += "[id"+i+":"+orderArray[i].hashid + "],";
     		serilazedString += "[num"+i+":"+orderArray[i].num + "],";
+    		serilazedString += "[ex"+i+":"+(orderArray[i].ex || "") + "],";
     	}}
     	serilazedString += "}}";
 

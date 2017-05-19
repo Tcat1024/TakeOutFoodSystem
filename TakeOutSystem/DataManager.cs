@@ -16,20 +16,49 @@ namespace TakeOutSystem
     public int id;
     public string name;
     public float prise;
-    public MenuData(int _id, string _name, float _prise)
+    public bool has_ex;
+    public MenuData(int _id, string _name, float _prise, bool _has_ex)
     {
       id = _id;
       name = _name;
       prise = _prise;
+      has_ex = _has_ex;
     }
   }
   public class DataManager
   {
+    private class OrderDetail
+    {
+      public int id;
+      public int num;
+      public string ex;
+      public OrderDetail(int _id, int _num, string _ex = "")
+      {
+        id = _id;
+        num = _num;
+        ex = _ex.Trim();
+      }
+    }
+
+    private class OrderCompare : IEqualityComparer<DataRow>
+    {
+      public bool Equals(DataRow x, DataRow y)
+      {
+        return x["order_id"] == y["order_id"] && x["order_ex"] == y["order_ex"];
+      }
+
+      public int GetHashCode(DataRow obj)
+      {
+        string retCode = string.Format("{0}_{1}", obj["order_id"], obj["order_ex"]);
+        return retCode.GetHashCode();
+      }
+    }
+
     private class AnalysedData
     {
       public string name;
-      public List<Tuple<int, int>> orders;
-      public AnalysedData(string _name, List<Tuple<int, int>> _orders)
+      public List<OrderDetail> orders;
+      public AnalysedData(string _name, List<OrderDetail> _orders)
       {
         name = _name;
         orders = _orders;
@@ -65,6 +94,7 @@ namespace TakeOutSystem
     private InterlockedQueue<AnalysedData> m_analysedDatas = new InterlockedQueue<AnalysedData>();
     private Thread m_refreshThread;
     private Control m_mainThreadControl;
+    private OrderCompare m_defaultOrderCompare = new OrderCompare();
     private static DataManager s_instance = new DataManager();
 
     ~DataManager()
@@ -92,20 +122,32 @@ namespace TakeOutSystem
       m_allDataSet.Tables.Clear();
       detailDataTable = m_allDataSet.Tables.Add("details");
       ordersDataTable = m_allDataSet.Tables.Add("orders");
+      totalDataTable = m_allDataSet.Tables.Add("total");
       ordersDataTable.Columns.Add(new DataColumn("customer", typeof(string)));
       ordersDataTable.Columns.Add(new DataColumn("order_id", typeof(int)));
       ordersDataTable.Columns.Add(new DataColumn("order_name", typeof(string)));
       ordersDataTable.Columns.Add(new DataColumn("order_prise", typeof(float)));
       ordersDataTable.Columns.Add(new DataColumn("order_num", typeof(int)));
+      ordersDataTable.Columns.Add(new DataColumn("order_ex", typeof(string)));
       ordersDataTable.Columns.Add(new DataColumn("total_prise", typeof(float), "order_prise*order_num"));
-      ordersDataTable.PrimaryKey = new DataColumn[] { ordersDataTable.Columns["customer"], ordersDataTable.Columns["order_id"] };
+      ordersDataTable.PrimaryKey = new DataColumn[] { ordersDataTable.Columns["customer"], ordersDataTable.Columns["order_id"]};
 
       detailDataTable.Columns.Add(new DataColumn("name", typeof(string)));
+      detailDataTable.Columns.Add(new DataColumn("detailStr", typeof(string)));
 
       m_allDataSet.Relations.Add("customer_name", detailDataTable.Columns["name"], ordersDataTable.Columns["customer"]);
       detailDataTable.Columns.Add(new DataColumn("total_prise", typeof(float), "Sum(Child.total_prise)"));
       detailDataTable.PrimaryKey = new DataColumn[] { detailDataTable.Columns["name"] };
       ordersDataTable.DefaultView.RowFilter = "customer = ''";
+
+      totalDataTable.Columns.Add(new DataColumn("order_id", typeof(int)));
+      totalDataTable.Columns.Add(new DataColumn("order_name", typeof(string)));
+      totalDataTable.Columns.Add(new DataColumn("order_ex", typeof(string)));
+      totalDataTable.PrimaryKey = new DataColumn[] { totalDataTable.Columns["order_id"], totalDataTable.Columns["order_ex"] };
+      m_allDataSet.Relations.Add("order_id", new DataColumn[] { totalDataTable.Columns["order_id"], totalDataTable.Columns["order_ex"] }, new DataColumn[] { ordersDataTable.Columns["order_id"], ordersDataTable.Columns["order_ex"] });
+      totalDataTable.Columns.Add(new DataColumn("total_num", typeof(int), "Sum(Child.order_num)"));
+      totalDataTable.DefaultView.Sort = "order_id";
+
       if (null == m_refreshThread)
       {
         m_refreshThread = new Thread(RefreshThread);
@@ -135,7 +177,7 @@ namespace TakeOutSystem
       m_mainThreadControl = null;
     }
 
-    public void AddNewMenuData(string name, float prise)
+    public void AddNewMenuData(string name, float prise, bool has_ex)
     {
       List<float> prises;
       if (m_dicMenuPrises.TryGetValue(name, out prises))
@@ -149,7 +191,7 @@ namespace TakeOutSystem
       }
       else
         m_dicMenuPrises[name] = new List<float>() { prise };
-      m_menuData.Add(new MenuData(m_menuData.Count, name, prise));
+      m_menuData.Add(new MenuData(m_menuData.Count, name, prise, has_ex));
     }
 
     public string AnalyseOrderDataAsyn(string serilizedStr)
@@ -163,13 +205,13 @@ namespace TakeOutSystem
         return "Error：姓名不正确";
 
       string name = nameMatch.Groups[1].Value;
-      var anaResult = Regex.Matches(serilizedStr, @"\[id\S+?:(\d+?)\],\[num\S+?:(\d+?)\]");
-      List<Tuple<int, int>> orderList = new List<Tuple<int, int>>();
+      var anaResult = Regex.Matches(serilizedStr, @"\[id\S+?:(\d+?)\],\[num\S+?:(\d+?)\],\[ex\S+?:(\S*?)\]");
+      List<OrderDetail> orderList = new List<OrderDetail>();
       foreach (Match match in anaResult)
       {
-        if (match.Groups.Count < 2)
+        if (match.Groups.Count < 4)
           continue;
-        orderList.Add(new Tuple<int, int>(int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value)));
+        orderList.Add(new OrderDetail(int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value), match.Groups[3].Value.ToString()));
       }
 
       m_analysedDatas.Enqueue(new AnalysedData(name, orderList));
@@ -213,26 +255,42 @@ namespace TakeOutSystem
         {
           if (data.orders.Count <= 0)
             continue;
-          bool trueAdd = false;
-          foreach(var order in data.orders)
+          StringBuilder detailStrBuilder = new StringBuilder();
+          foreach (var order in data.orders)
           {
-            if (order.Item1 < 0 || order.Item1 >= m_menuData.Count)
+            if (order.id < 0 || order.id >= m_menuData.Count)
               continue;
-            if (!trueAdd)
+            if (detailStrBuilder.Length == 0)
             {
-              trueAdd = true;
               tarRow = detailDataTable.NewRow();
               tarRow["name"] = data.name;
               detailDataTable.Rows.Add(tarRow);
             }
-            var menudata = m_menuData[order.Item1];
+            var menudata = m_menuData[order.id];
             var newRow = ordersDataTable.NewRow();
             newRow["customer"] = data.name;
-            newRow["order_id"] = order.Item1;
+            newRow["order_id"] = order.id;
             newRow["order_name"] = menudata.name;
             newRow["order_prise"] = menudata.prise;
-            newRow["order_num"] = order.Item2;
+            newRow["order_num"] = order.num;
+            newRow["order_ex"] = order.ex;
             ordersDataTable.Rows.Add(newRow);
+
+            detailStrBuilder.Append(",");
+            detailStrBuilder.Append(menudata.name);
+            if(order.ex.Length > 0)
+            {
+              detailStrBuilder.Append("(");
+              detailStrBuilder.Append(order.ex);
+              detailStrBuilder.Append(")");
+            }
+            detailStrBuilder.Append("x");
+            detailStrBuilder.Append(order.num);
+          }
+
+          if(detailStrBuilder.Length > 0)
+          {
+            tarRow["detailStr"] = detailStrBuilder.Remove(0, 1).ToString();
           }
         }
         else
@@ -247,31 +305,58 @@ namespace TakeOutSystem
             detailDataTable.Rows.Remove(tarRow);
             continue;
           }
-          bool trueAdd = false;
+          StringBuilder detailStrBuilder = new StringBuilder();
           foreach (var order in data.orders)
           {
-            if (order.Item1 < 0 || order.Item1 >= m_menuData.Count)
+            if (order.id < 0 || order.id >= m_menuData.Count)
               continue;
-            if (!trueAdd)
-              trueAdd = true;
-            var menudata = m_menuData[order.Item1];
+            var menudata = m_menuData[order.id];
             var newRow = ordersDataTable.NewRow();
             newRow["customer"] = data.name;
-            newRow["order_id"] = order.Item1;
+            newRow["order_id"] = order.id;
             newRow["order_name"] = menudata.name;
             newRow["order_prise"] = menudata.prise;
-            newRow["order_num"] = order.Item2;
+            newRow["order_num"] = order.num;
+            newRow["order_ex"] = order.ex;
             ordersDataTable.Rows.Add(newRow);
+
+            detailStrBuilder.Append(",");
+            detailStrBuilder.Append(menudata.name);
+            if (order.ex.Length > 0)
+            {
+              detailStrBuilder.Append("(");
+              detailStrBuilder.Append(order.ex);
+              detailStrBuilder.Append(")");
+            }
+            detailStrBuilder.Append("x");
+            detailStrBuilder.Append(order.num);
           }
-          if(!trueAdd)
+          if(detailStrBuilder.Length == 0)
           {
             detailDataTable.Rows.Remove(tarRow);
             continue;
           }
+          tarRow["detailStr"] = detailStrBuilder.Remove(0, 1).ToString();
         }
+      }
+      if(bChanged)
+      {
+        totalDataTable.BeginLoadData();
+        totalDataTable.Rows.Clear();
+        var distinctRows = ordersDataTable.AsEnumerable().Distinct<DataRow>(m_defaultOrderCompare);
+        foreach (var row in distinctRows)
+        {
+          var newRow = totalDataTable.NewRow();
+          newRow["order_id"] = row["order_id"];
+          newRow["order_ex"] = row["order_ex"];
+          newRow["order_name"] = row["order_name"];
+          totalDataTable.Rows.Add(newRow);
+        }
+        totalDataTable.EndLoadData();
       }
       detailDataTable.EndLoadData();
       ordersDataTable.EndLoadData();
     }
+
   }
 }
