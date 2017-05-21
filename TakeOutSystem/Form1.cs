@@ -16,18 +16,31 @@ namespace TakeOutSystem
 {
   public partial class Form1 : Form
   {
-    private Size m_smallSize = new Size(1007, 100);
-    private Size m_bigSize = new Size(1007, 705);
     private Thread m_httpThread;
     private HttpServer m_curServer;
     private float m_maxPrise = -1;
+    private string m_lastWebSite = "";
     public Form1()
     {
       InitializeComponent();
     }
     
+    private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      DataManager.instance.Release();
+      TryStopServer(true);
+    }
 
-    private void PutOutBtn_Click(object sender, EventArgs e)
+    private void ClearBtn_Click(object sender, EventArgs e)
+    {
+      if (MessageBox.Show("确定要清除当前所有数据？", "Warning", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+      {
+        return;
+      }
+      DataManager.instance.Clear();
+    }
+
+    private void StartBtn_Click(object sender, EventArgs e)
     {
       if (TargetUrlTex.Text.Length <= 0)
       {
@@ -35,21 +48,37 @@ namespace TakeOutSystem
         return;
       }
 
+      if(m_lastWebSite != "" && TargetUrlTex.Text != m_lastWebSite && DataManager.instance.ordersDataTable.Rows.Count > 0)
+      {
+        MessageBox.Show("网址已更改，请先清楚原有数据");
+        return;
+      }
+
       int curPort = 0;
-      if(!int.TryParse(PortTex.Text, out curPort) || curPort <= 0)
+      if (!int.TryParse(PortTex.Text, out curPort) || curPort <= 0)
       {
         MessageBox.Show("端口错误");
         return;
       }
 
-      DataManager.instance.AddNewMenuData("测试1", 28, true);
-      DataManager.instance.AddNewMenuData("测试2", 38, true);
-      DataManager.instance.AddNewMenuData("测试3", 4, false);
-      DataManager.instance.AddNewMenuData("测试2", 38, true);
-      DataManager.instance.AddNewMenuData("测试1", 26, true);
+      List<WebSiteAnalyseResult> result;
+      string shopName;
+      var errorMsg = WebSiteAnalyser.Analyser(TargetUrlTex.Text, out result, out shopName);
 
-      string webSiteStr = WebSiteGenerator.GetWebSiteStr("MMORPG订餐", "紫光园", TargetUrlTex.Text, m_maxPrise, DataManager.instance.menuData);
-      if(webSiteStr == "")
+      if(errorMsg != "")
+      {
+        MessageBox.Show(errorMsg);
+        return;
+      }
+
+      DataManager.instance.ClearMenuData();
+      foreach (var ret in result)
+      {
+        DataManager.instance.AddNewMenuData(ret.name, ret.prise, ret.has_ex, ret.img_path);
+      }
+      m_lastWebSite = TargetUrlTex.Text;
+      string webSiteStr = WebSiteGenerator.GetWebSiteStr("订餐吧", shopName, TargetUrlTex.Text, m_maxPrise, DataManager.instance.menuData);
+      if (webSiteStr == "")
       {
         MessageBox.Show("网页生成失败");
         return;
@@ -64,39 +93,20 @@ namespace TakeOutSystem
       m_httpThread.Start();
 
       PutOutUrlTex.Text = curIp.ToString() + ":" + curPort;
-      ShowOpenGroup(true);
-    }
 
+      MessageBox.Show("服务开启成功");
 
-    private string GenerateWebSite()
-    {
-      string rootPath = Directory.GetCurrentDirectory();
-      if (!File.Exists(rootPath + "\\Web.html"))
-      {
-        return "";
-      }
-      return File.ReadAllText(rootPath + "\\Web.html");
-    }
+      StartBtn.Visible = false;
+      StopBtn.Visible = true;
 
-    private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-    {
-      DataManager.instance.Release();
-      TryStopServer(true);
-    }
-
-    private void ClearBtn_Click(object sender, EventArgs e)
-    {
-      if (MessageBox.Show("确定要清除当前所有数据？", "Warning", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
-      {
-        return;
-      }
     }
 
     private void StopBtn_Click(object sender, EventArgs e)
     {
       TryStopServer();
-      if(null == DataManager.instance.ordersDataTable ||DataManager.instance.ordersDataTable.Rows.Count <= 0)
-        ShowOpenGroup(false);
+      MessageBox.Show("服务已停止");
+      StartBtn.Visible = true;
+      StopBtn.Visible = false;
     }
 
     private bool TryStopServer(bool bForce = false)
@@ -129,7 +139,6 @@ namespace TakeOutSystem
       {
         DinnerRad.Checked = true;
       }
-      ShowOpenGroup(false);
 
       ShowWait(true, "初始化中,");
 
@@ -148,45 +157,44 @@ namespace TakeOutSystem
       }
     }
 
-    private void ShowOpenGroup(bool bShow)
+
+    private string GenerateWebSite()
     {
-      if(bShow)
+      string rootPath = Directory.GetCurrentDirectory();
+      if (!File.Exists(rootPath + "\\Web.html"))
       {
-        OpenGroup.Visible = true;
-        this.MaximumSize = Size.Empty;
-        this.MinimumSize = m_bigSize;
+        return "";
       }
-      else
-      {
-        OpenGroup.Visible = false;
-        this.MinimumSize = m_smallSize;
-        this.MaximumSize = m_smallSize;
-      }
+      return File.ReadAllText(rootPath + "\\Web.html");
     }
 
     private void ShowWait(bool bShow, string desc = "")
     {
-      if(bShow)
-      {
-        WaitPanel.Show();
-        WaitLabel.Text = desc + "请稍等..";
-        WaitLabel.Location = new Point(Size.Width>>1, Size.Height>>1);
-      }
-      else
-      {
-        WaitPanel.Hide();
-      }
+      //if(bShow)
+      //{
+      //  WaitPanel.Show();
+      //  WaitLabel.Text = desc + "请稍等..";
+      //  WaitLabel.Location = new Point(Size.Width>>1, Size.Height>>1);
+      //}
+      //else
+      //{
+      //  WaitPanel.Hide();
+      //}
     }
 
     private void DetailGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
     {
+      if (ShowAllChb.Checked)
+        return;
       var detailTable = DataManager.instance.detailDataTable;
       var orderTable = DataManager.instance.ordersDataTable;
-      if (null == detailTable || null == orderTable || e.RowIndex < 0 || e.RowIndex >= detailTable.Rows.Count)
+      if (null == detailTable || null == orderTable || e.RowIndex < 0 || e.RowIndex >= DetailGrid.Rows.Count)
       {
         return;
       }
-      var tarRow = detailTable.Rows[e.RowIndex];
+      var tarRow = DetailGrid.Rows[e.RowIndex].DataBoundItem as DataRowView;
+      if (null == tarRow)
+        return;
       orderTable.DefaultView.RowFilter = "customer = '"+ tarRow["name"] + "'";
     }
 
@@ -220,6 +228,20 @@ namespace TakeOutSystem
       if (m_maxPrise > 0 && e.ColumnIndex == 2 && e.Value is float && (float)e.Value > m_maxPrise)
       {
         e.CellStyle.BackColor = Color.Red;
+      }
+    }
+
+    private void AllPeopleChb_CheckedChanged(object sender, EventArgs e)
+    {
+      DataManager.instance.showDefaultPeople = AllPeopleChb.Checked;
+    }
+
+    private void ShowAllChb_CheckedChanged(object sender, EventArgs e)
+    {
+      OrderGrid.Columns["customer"].Visible = ShowAllChb.Checked;
+      if(ShowAllChb.Checked)
+      {
+        DataManager.instance.ordersDataTable.DefaultView.RowFilter = "";
       }
     }
   }

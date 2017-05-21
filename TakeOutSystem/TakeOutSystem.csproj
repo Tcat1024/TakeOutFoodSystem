@@ -58,6 +58,7 @@
     <Compile Include="HttpProcessor.cs" />
     <Compile Include="HttpServer.cs" />
     <Compile Include="InterlockedQueue.cs" />
+    <Compile Include="WebSiteAnalyser.cs" />
     <Compile Include="MainHttpServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

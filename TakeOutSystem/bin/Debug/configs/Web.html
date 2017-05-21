@@ -8,9 +8,18 @@ body
 	margin-right:20%;
 }}
 .menu-content {{
-	margin-top:10px;
-	margin-bottom: 10px;
-	font-size: 25px;
+	width: 335px;
+    height: 120px;
+    position: relative;
+    background: #fafafa;
+    float: left;
+    margin-right: 20px;
+    margin-bottom: 15px;
+    padding: 0;
+    color: #333;
+    display: inline-block;
+    vertical-align: middle;
+    zoom: 1;
 }}
 .menu-content-imgs{{
 	display: inline-block;  
@@ -80,6 +89,40 @@ body
 	box-shadow: 0px 0px #717a33;
 	top: 4px;
 }}
+.bg-img {{
+	overflow: hidden;
+    display: block;
+    position: relative;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    -ms-background-size: cover;
+    float: left;
+    margin: 0;
+    height: 120px;
+    width: 120px;
+}}
+.content-info {{
+	width: 190px;
+    margin-left: 20px;
+    font-size: 14px;
+    color: #333;
+    font-weight: 400;
+    text-decoration: none;
+    padding: 10px 0;
+    height: 100px;
+    float: left;
+}}
+#select{{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}}
+#buttom{{
+    position: absolute;
+    bottom: 10px;	
+}}
 </style>
 <title>{0}</title>
 </head>
@@ -131,7 +174,7 @@ body
 	var submitbtn = document.getElementById("submitbtn");
 	function OnAddClick(paramater)
 	{{
-		Add(paramater.parentNode);
+		Add(paramater.parentNode.parentNode);
 	}}
 	function Add(node)
 	{{
@@ -149,15 +192,32 @@ body
 				case "name":
 					name = children[i].innerHTML;
 					break;
-				case "prise":
-					prise = children[i].innerHTML;
-					break;
-				case "num":
-					children[i].innerHTML = String(num);
-				case "hidden":
-					if(num > 0)
+				case "buttom":
+					var buttomchild = children[i].children || children[i].childNodes;
+					for(var j = 0; j < buttomchild.length; ++j)
 					{{
-						children[i].style.visibility = "visible";
+						if(buttomchild[j].id == "prise")
+						{{
+							prise = buttomchild[j].innerHTML;
+							break;
+						}}
+					}}
+					break;
+				case "select":
+					var buttomchild = children[i].children || children[i].childNodes;
+					for(var j = 0; j < buttomchild.length; ++j)
+					{{
+						switch(buttomchild[j].id)
+						{{
+							case "num":
+								buttomchild[j].innerHTML = String(num);
+							case "hidden":
+								if(num > 0)
+								{{
+									buttomchild[j].style.visibility = "visible";
+								}}
+								break;
+						}}
 					}}
 					break;
 				case "ex":
@@ -173,7 +233,7 @@ body
 	}}
 	function OnDeleteClick(paramater)
 	{{
-		Delete(paramater.parentNode);
+		Delete(paramater.parentNode.parentNode);
 	}}
 	function Delete(node)
 	{{
@@ -191,14 +251,36 @@ body
 				case "name":
 					name = children[i].innerHTML;
 					break;
-				case "prise":
-					prise = children[i].innerHTML;
+				case "buttom":
+					var buttomchild = children[i].children || children[i].childNodes;
+					for(var j = 0; j < buttomchild.length; ++j)
+					{{
+						if(buttomchild[j].id == "prise")
+						{{
+							prise = buttomchild[j].innerHTML;
+							break;
+						}}
+					}}
 					break;
-				case "num":
-					children[i].innerHTML = String(num);
+				case "select":
+					var buttomchild = children[i].children || children[i].childNodes;
+					for(var j = 0; j < buttomchild.length; ++j)
+					{{
+						switch(buttomchild[j].id)
+						{{
+							case "num":
+								buttomchild[j].innerHTML = String(num);
+							case "hidden":
+								if(num == 0)
+								{{
+									buttomchild[j].style.visibility = "hidden";
+								}}
+								break;
+						}}
+					}}
+					break;
 				case "ex":
 					ex = children[i].value;
-				case "hidden":
 					if(num == 0)
 					{{
 						children[i].style.visibility = "hidden";
@@ -330,7 +412,7 @@ body
 			alert("请输入姓名！");
 			return;
 		}}
-		if(NaN != targetcash && targetcash < totalnum && ~confirm("当前总额超出标准"+ (totalnum - targetcash) +"元，是否确认提交？"))
+		if(NaN != targetcash && targetcash < totalnum && !confirm("当前总额超出标准"+ (totalnum - targetcash) +"元，是否确认提交？"))
 		{{
 			return;
     	}}

@@ -17,12 +17,14 @@ namespace TakeOutSystem
     public string name;
     public float prise;
     public bool has_ex;
-    public MenuData(int _id, string _name, float _prise, bool _has_ex)
+    public string img_path;
+    public MenuData(int _id, string _name, float _prise, bool _has_ex, string _img_path)
     {
       id = _id;
       name = _name;
       prise = _prise;
       has_ex = _has_ex;
+      img_path = _img_path;
     }
   }
   public class DataManager
@@ -44,7 +46,7 @@ namespace TakeOutSystem
     {
       public bool Equals(DataRow x, DataRow y)
       {
-        return x["order_id"] == y["order_id"] && x["order_ex"] == y["order_ex"];
+        return x["order_id"].ToString() == y["order_id"].ToString() && x["order_ex"].ToString() == y["order_ex"].ToString();
       }
 
       public int GetHashCode(DataRow obj)
@@ -73,11 +75,29 @@ namespace TakeOutSystem
       }
     }
 
+    public bool showDefaultPeople
+    {
+      get
+      {
+        return m_showDefaultPople;
+      }
+      set
+      {
+        if (m_showDefaultPople == value)
+          return;
+        m_showDefaultPople = value;
+        if(null != detailDataTable)
+        {
+          detailDataTable.DefaultView.RowFilter = value ? "" : "detailStr not in ('')";
+        }
+      }
+    }
+
+
     public DataTable detailDataTable;
     public DataTable ordersDataTable;
     public DataTable totalDataTable;
     public delegate void DataChangedEventHandler();
-    public event DataChangedEventHandler OnDataChanged;
 
     public static DataManager instance
     {
@@ -87,6 +107,9 @@ namespace TakeOutSystem
       }
     }
 
+    private bool m_showDefaultPople = true;
+    private List<string> m_defaultNameList = new List<string>();
+    private HashSet<string> m_defaultNameSet = new HashSet<string>();
     private delegate void InvokeDelegate();
     private DataSet m_allDataSet = new DataSet();
     private List<MenuData> m_menuData = new List<MenuData>();
@@ -118,6 +141,8 @@ namespace TakeOutSystem
 
     public bool Init(Control mainControl)
     {
+      InitDefaultNamesConfig();
+
       m_mainThreadControl = mainControl;
       m_allDataSet.Tables.Clear();
       detailDataTable = m_allDataSet.Tables.Add("details");
@@ -138,7 +163,6 @@ namespace TakeOutSystem
       m_allDataSet.Relations.Add("customer_name", detailDataTable.Columns["name"], ordersDataTable.Columns["customer"]);
       detailDataTable.Columns.Add(new DataColumn("total_prise", typeof(float), "Sum(Child.total_prise)"));
       detailDataTable.PrimaryKey = new DataColumn[] { detailDataTable.Columns["name"] };
-      ordersDataTable.DefaultView.RowFilter = "customer = ''";
 
       totalDataTable.Columns.Add(new DataColumn("order_id", typeof(int)));
       totalDataTable.Columns.Add(new DataColumn("order_name", typeof(string)));
@@ -146,7 +170,11 @@ namespace TakeOutSystem
       totalDataTable.PrimaryKey = new DataColumn[] { totalDataTable.Columns["order_id"], totalDataTable.Columns["order_ex"] };
       m_allDataSet.Relations.Add("order_id", new DataColumn[] { totalDataTable.Columns["order_id"], totalDataTable.Columns["order_ex"] }, new DataColumn[] { ordersDataTable.Columns["order_id"], ordersDataTable.Columns["order_ex"] });
       totalDataTable.Columns.Add(new DataColumn("total_num", typeof(int), "Sum(Child.order_num)"));
+
       totalDataTable.DefaultView.Sort = "order_id";
+      showDefaultPeople = showDefaultPeople;
+
+      Clear();
 
       if (null == m_refreshThread)
       {
@@ -177,7 +205,13 @@ namespace TakeOutSystem
       m_mainThreadControl = null;
     }
 
-    public void AddNewMenuData(string name, float prise, bool has_ex)
+    public void ClearMenuData()
+    {
+      m_menuData.Clear();
+      m_dicMenuPrises.Clear();
+    }
+
+    public void AddNewMenuData(string name, float prise, bool has_ex, string img_path)
     {
       List<float> prises;
       if (m_dicMenuPrises.TryGetValue(name, out prises))
@@ -191,7 +225,7 @@ namespace TakeOutSystem
       }
       else
         m_dicMenuPrises[name] = new List<float>() { prise };
-      m_menuData.Add(new MenuData(m_menuData.Count, name, prise, has_ex));
+      m_menuData.Add(new MenuData(m_menuData.Count, name, prise, has_ex, img_path));
     }
 
     public string AnalyseOrderDataAsyn(string serilizedStr)
@@ -221,9 +255,38 @@ namespace TakeOutSystem
 
     public void Clear()
     {
-      foreach(DataTable table in m_allDataSet.Tables)
+      foreach (DataTable table in m_allDataSet.Tables)
       {
         table.Rows.Clear();
+      }
+      if(null != detailDataTable && m_defaultNameList.Count > 0)
+      {
+        detailDataTable.BeginLoadData();
+        foreach (var name in m_defaultNameList)
+        {
+          var tarRow = detailDataTable.NewRow();
+          tarRow["name"] = name;
+          detailDataTable.Rows.Add(tarRow);
+        }
+        detailDataTable.EndLoadData();
+      }
+    }
+
+    private void InitDefaultNamesConfig()
+    {
+      var path = Directory.GetCurrentDirectory() + "/configs/defaultNames.txt";
+      if (!File.Exists(path))
+        return;
+      var file = File.ReadAllText(path);
+      var names = file.Split(new char[] { ' ', '\r', '\n', '\t' },StringSplitOptions.RemoveEmptyEntries);
+      m_defaultNameList.Clear();
+      m_defaultNameSet.Clear();
+      foreach(var name in names)
+      {
+        if(m_defaultNameSet.Add(name))
+        {
+          m_defaultNameList.Add(name);
+        }
       }
     }
 
@@ -302,7 +365,10 @@ namespace TakeOutSystem
           }
           if (data.orders.Count <= 0)
           {
-            detailDataTable.Rows.Remove(tarRow);
+            if ((m_defaultNameSet.Count == 0 || !m_defaultNameSet.Contains(data.name)))
+              detailDataTable.Rows.Remove(tarRow);
+            else
+              tarRow["detailStr"] = "";
             continue;
           }
           StringBuilder detailStrBuilder = new StringBuilder();
@@ -333,7 +399,10 @@ namespace TakeOutSystem
           }
           if(detailStrBuilder.Length == 0)
           {
-            detailDataTable.Rows.Remove(tarRow);
+            if ((m_defaultNameSet.Count == 0 || !m_defaultNameSet.Contains(data.name)))
+              detailDataTable.Rows.Remove(tarRow);
+            else
+              tarRow["detailStr"] = "";
             continue;
           }
           tarRow["detailStr"] = detailStrBuilder.Remove(0, 1).ToString();
