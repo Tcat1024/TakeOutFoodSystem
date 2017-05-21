@@ -8,11 +8,14 @@ E:\Programs\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.csproj.GenerateR
 E:\Programs\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.exe
 E:\Programs\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.pdb
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\bin\Debug\TakeOutSystem.exe.config
-E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Debug\TakeOutSystem.exe
-E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Debug\TakeOutSystem.pdb
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\bin\Debug\TakeOutSystem.exe
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\bin\Debug\TakeOutSystem.pdb
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Debug\TakeOutSystem.csprojResolveAssemblyReference.cache
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Debug\TakeOutSystem.Form1.resources
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Debug\TakeOutSystem.Properties.Resources.resources
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Debug\TakeOutSystem.csproj.GenerateResource.Cache
+E:\Workspace\TakeOutFoodSystem\Build\TakeOutSystem.exe.config
+E:\Workspace\TakeOutFoodSystem\Build\TakeOutSystem.exe
+E:\Workspace\TakeOutFoodSystem\Build\TakeOutSystem.pdb
+E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Debug\TakeOutSystem.exe
+E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Debug\TakeOutSystem.pdb

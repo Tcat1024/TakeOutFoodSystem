@@ -6,3 +6,7 @@ E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Release\TakeOutSystem.Propertie
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Release\TakeOutSystem.csproj.GenerateResource.Cache
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Release\TakeOutSystem.exe
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Release\TakeOutSystem.pdb
+E:\Workspace\TakeOutFoodSystem\TakeOutSystem\bin\Release\TakeOutSystem_d.exe.config
+E:\Workspace\TakeOutFoodSystem\Build\TakeOutSystem.exe.config
+E:\Workspace\TakeOutFoodSystem\Build\TakeOutSystem.exe
+E:\Workspace\TakeOutFoodSystem\Build\TakeOutSystem.pdb

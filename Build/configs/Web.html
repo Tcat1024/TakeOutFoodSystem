@@ -185,6 +185,7 @@ body
 		var hashid = node.getAttribute("data-hashid");
 		var children = node.children || node.childNodes;
 		var ex = "";
+		var allow_ex = false;
 		for(var i = 0; i < children.length; ++i)
 		{{
 			switch(children[i].id)
@@ -222,12 +223,17 @@ body
 					break;
 				case "ex":
 					ex = children[i].value;
-					if(num > 0 && children[i].getAttribute("data-allow").toLowerCase() == "true")
+					allow_ex = children[i].getAttribute("data-allow").toLowerCase() == "true";
+					if(num > 0 && allow_ex)
 					{{
 						children[i].style.visibility = "visible";
 					}}
 					break;
 			}}
+		}}
+		if(num == 1 && allow_ex && ex == "")
+		{{
+			alert("您选择了一项多规格商品，请在“规格”输入框中填入规格描述");
 		}}
 		OnDishNumChange(node, name, num, prise, hashid, ex);
 	}}
