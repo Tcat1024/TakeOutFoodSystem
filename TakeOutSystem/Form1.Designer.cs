@@ -84,29 +84,26 @@
       // 
       this.TargetUrlTex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.TargetUrlTex.Location = new System.Drawing.Point(88, 15);
-      this.TargetUrlTex.Margin = new System.Windows.Forms.Padding(4);
+      this.TargetUrlTex.Location = new System.Drawing.Point(66, 12);
       this.TargetUrlTex.Name = "TargetUrlTex";
-      this.TargetUrlTex.Size = new System.Drawing.Size(645, 25);
+      this.TargetUrlTex.Size = new System.Drawing.Size(485, 21);
       this.TargetUrlTex.TabIndex = 0;
       // 
       // label1
       // 
       this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(9, 19);
-      this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label1.Location = new System.Drawing.Point(7, 15);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(75, 15);
+      this.label1.Size = new System.Drawing.Size(59, 12);
       this.label1.TabIndex = 1;
       this.label1.Text = "外卖网址:";
       // 
       // MaxMoneyTex
       // 
       this.MaxMoneyTex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.MaxMoneyTex.Location = new System.Drawing.Point(829, 14);
-      this.MaxMoneyTex.Margin = new System.Windows.Forms.Padding(4);
+      this.MaxMoneyTex.Location = new System.Drawing.Point(622, 11);
       this.MaxMoneyTex.Name = "MaxMoneyTex";
-      this.MaxMoneyTex.Size = new System.Drawing.Size(52, 25);
+      this.MaxMoneyTex.Size = new System.Drawing.Size(40, 21);
       this.MaxMoneyTex.TabIndex = 6;
       this.MaxMoneyTex.TextChanged += new System.EventHandler(this.MaxMoneyTex_TextChanged);
       // 
@@ -114,10 +111,9 @@
       // 
       this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(743, 19);
-      this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label2.Location = new System.Drawing.Point(557, 15);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(75, 15);
+      this.label2.Size = new System.Drawing.Size(59, 12);
       this.label2.TabIndex = 5;
       this.label2.Text = "人均限额:";
       // 
@@ -130,11 +126,10 @@
             this.totalPrise});
       this.DetailGrid.Dock = System.Windows.Forms.DockStyle.Fill;
       this.DetailGrid.Location = new System.Drawing.Point(0, 0);
-      this.DetailGrid.Margin = new System.Windows.Forms.Padding(4);
       this.DetailGrid.Name = "DetailGrid";
       this.DetailGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
       this.DetailGrid.RowTemplate.Height = 23;
-      this.DetailGrid.Size = new System.Drawing.Size(577, 291);
+      this.DetailGrid.Size = new System.Drawing.Size(432, 232);
       this.DetailGrid.TabIndex = 9;
       this.DetailGrid.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DetailGrid_CellPainting);
       this.DetailGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DetailGrid_CellValueChanged);
@@ -163,22 +158,21 @@
       // ExportBtn
       // 
       this.ExportBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.ExportBtn.Location = new System.Drawing.Point(1168, 732);
-      this.ExportBtn.Margin = new System.Windows.Forms.Padding(4);
+      this.ExportBtn.Location = new System.Drawing.Point(876, 586);
       this.ExportBtn.Name = "ExportBtn";
-      this.ExportBtn.Size = new System.Drawing.Size(100, 29);
+      this.ExportBtn.Size = new System.Drawing.Size(75, 23);
       this.ExportBtn.TabIndex = 10;
       this.ExportBtn.Text = "导出";
       this.ExportBtn.UseVisualStyleBackColor = true;
+      this.ExportBtn.Visible = false;
       // 
       // LunchRad
       // 
       this.LunchRad.AutoSize = true;
       this.LunchRad.Checked = true;
-      this.LunchRad.Location = new System.Drawing.Point(4, 4);
-      this.LunchRad.Margin = new System.Windows.Forms.Padding(4);
+      this.LunchRad.Location = new System.Drawing.Point(3, 3);
       this.LunchRad.Name = "LunchRad";
-      this.LunchRad.Size = new System.Drawing.Size(58, 19);
+      this.LunchRad.Size = new System.Drawing.Size(47, 16);
       this.LunchRad.TabIndex = 11;
       this.LunchRad.TabStop = true;
       this.LunchRad.Text = "午饭";
@@ -187,10 +181,9 @@
       // DinnerRad
       // 
       this.DinnerRad.AutoSize = true;
-      this.DinnerRad.Location = new System.Drawing.Point(69, 4);
-      this.DinnerRad.Margin = new System.Windows.Forms.Padding(4);
+      this.DinnerRad.Location = new System.Drawing.Point(52, 3);
       this.DinnerRad.Name = "DinnerRad";
-      this.DinnerRad.Size = new System.Drawing.Size(58, 19);
+      this.DinnerRad.Size = new System.Drawing.Size(47, 16);
       this.DinnerRad.TabIndex = 12;
       this.DinnerRad.Text = "晚饭";
       this.DinnerRad.UseVisualStyleBackColor = true;
@@ -198,20 +191,18 @@
       // PutOutUrlTex
       // 
       this.PutOutUrlTex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.PutOutUrlTex.Location = new System.Drawing.Point(699, 25);
-      this.PutOutUrlTex.Margin = new System.Windows.Forms.Padding(4);
+      this.PutOutUrlTex.Location = new System.Drawing.Point(524, 20);
       this.PutOutUrlTex.Name = "PutOutUrlTex";
       this.PutOutUrlTex.ReadOnly = true;
-      this.PutOutUrlTex.Size = new System.Drawing.Size(452, 25);
+      this.PutOutUrlTex.Size = new System.Drawing.Size(340, 21);
       this.PutOutUrlTex.TabIndex = 13;
       // 
       // PortTex
       // 
       this.PortTex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.PortTex.Location = new System.Drawing.Point(1095, 15);
-      this.PortTex.Margin = new System.Windows.Forms.Padding(4);
+      this.PortTex.Location = new System.Drawing.Point(821, 12);
       this.PortTex.Name = "PortTex";
-      this.PortTex.Size = new System.Drawing.Size(52, 25);
+      this.PortTex.Size = new System.Drawing.Size(40, 21);
       this.PortTex.TabIndex = 14;
       this.PortTex.Text = "8080";
       // 
@@ -219,20 +210,18 @@
       // 
       this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(1040, 19);
-      this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label3.Location = new System.Drawing.Point(780, 15);
       this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(45, 15);
+      this.label3.Size = new System.Drawing.Size(35, 12);
       this.label3.TabIndex = 15;
       this.label3.Text = "端口:";
       // 
       // ClearBtn
       // 
       this.ClearBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.ClearBtn.Location = new System.Drawing.Point(1168, 21);
-      this.ClearBtn.Margin = new System.Windows.Forms.Padding(4);
+      this.ClearBtn.Location = new System.Drawing.Point(876, 17);
       this.ClearBtn.Name = "ClearBtn";
-      this.ClearBtn.Size = new System.Drawing.Size(100, 29);
+      this.ClearBtn.Size = new System.Drawing.Size(75, 23);
       this.ClearBtn.TabIndex = 16;
       this.ClearBtn.Text = "清空";
       this.ClearBtn.UseVisualStyleBackColor = true;
@@ -251,10 +240,9 @@
             this.order_num});
       this.OrderGrid.Dock = System.Windows.Forms.DockStyle.Fill;
       this.OrderGrid.Location = new System.Drawing.Point(0, 0);
-      this.OrderGrid.Margin = new System.Windows.Forms.Padding(4);
       this.OrderGrid.Name = "OrderGrid";
       this.OrderGrid.RowTemplate.Height = 23;
-      this.OrderGrid.Size = new System.Drawing.Size(577, 450);
+      this.OrderGrid.Size = new System.Drawing.Size(432, 361);
       this.OrderGrid.TabIndex = 17;
       // 
       // customer
@@ -316,21 +304,22 @@
       this.OpenGroup.Controls.Add(this.PutOutUrlTex);
       this.OpenGroup.Controls.Add(this.ExportBtn);
       this.OpenGroup.Controls.Add(this.ClearBtn);
-      this.OpenGroup.Location = new System.Drawing.Point(0, 45);
-      this.OpenGroup.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-      this.OpenGroup.MinimumSize = new System.Drawing.Size(989, 612);
+      this.OpenGroup.Location = new System.Drawing.Point(0, 36);
+      this.OpenGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.OpenGroup.MinimumSize = new System.Drawing.Size(742, 490);
       this.OpenGroup.Name = "OpenGroup";
-      this.OpenGroup.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-      this.OpenGroup.Size = new System.Drawing.Size(1284, 805);
+      this.OpenGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.OpenGroup.Size = new System.Drawing.Size(963, 644);
       this.OpenGroup.TabIndex = 19;
       this.OpenGroup.TabStop = false;
       // 
       // ShowAllChb
       // 
       this.ShowAllChb.AutoSize = true;
-      this.ShowAllChb.Location = new System.Drawing.Point(196, 27);
+      this.ShowAllChb.Location = new System.Drawing.Point(147, 22);
+      this.ShowAllChb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
       this.ShowAllChb.Name = "ShowAllChb";
-      this.ShowAllChb.Size = new System.Drawing.Size(89, 19);
+      this.ShowAllChb.Size = new System.Drawing.Size(72, 16);
       this.ShowAllChb.TabIndex = 22;
       this.ShowAllChb.Text = "显示总表";
       this.ShowAllChb.UseVisualStyleBackColor = true;
@@ -341,9 +330,10 @@
       this.AllPeopleChb.AutoSize = true;
       this.AllPeopleChb.Checked = true;
       this.AllPeopleChb.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.AllPeopleChb.Location = new System.Drawing.Point(12, 27);
+      this.AllPeopleChb.Location = new System.Drawing.Point(9, 22);
+      this.AllPeopleChb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
       this.AllPeopleChb.Name = "AllPeopleChb";
-      this.AllPeopleChb.Size = new System.Drawing.Size(149, 19);
+      this.AllPeopleChb.Size = new System.Drawing.Size(120, 16);
       this.AllPeopleChb.TabIndex = 21;
       this.AllPeopleChb.Text = "是否显示未订餐人";
       this.AllPeopleChb.UseVisualStyleBackColor = true;
@@ -354,8 +344,8 @@
       this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.splitContainer1.Location = new System.Drawing.Point(0, 58);
-      this.splitContainer1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+      this.splitContainer1.Location = new System.Drawing.Point(0, 46);
+      this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
       this.splitContainer1.Name = "splitContainer1";
       // 
       // splitContainer1.Panel1
@@ -365,15 +355,16 @@
       // splitContainer1.Panel2
       // 
       this.splitContainer1.Panel2.Controls.Add(this.TotalGrid);
-      this.splitContainer1.Size = new System.Drawing.Size(1151, 745);
-      this.splitContainer1.SplitterDistance = 577;
+      this.splitContainer1.Size = new System.Drawing.Size(863, 596);
+      this.splitContainer1.SplitterDistance = 432;
+      this.splitContainer1.SplitterWidth = 3;
       this.splitContainer1.TabIndex = 20;
       // 
       // splitContainer2
       // 
       this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
       this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-      this.splitContainer2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+      this.splitContainer2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
       this.splitContainer2.Name = "splitContainer2";
       this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
       // 
@@ -384,8 +375,9 @@
       // splitContainer2.Panel2
       // 
       this.splitContainer2.Panel2.Controls.Add(this.OrderGrid);
-      this.splitContainer2.Size = new System.Drawing.Size(577, 745);
-      this.splitContainer2.SplitterDistance = 291;
+      this.splitContainer2.Size = new System.Drawing.Size(432, 596);
+      this.splitContainer2.SplitterDistance = 232;
+      this.splitContainer2.SplitterWidth = 3;
       this.splitContainer2.TabIndex = 0;
       // 
       // TotalGrid
@@ -398,10 +390,9 @@
             this.total_id});
       this.TotalGrid.Dock = System.Windows.Forms.DockStyle.Fill;
       this.TotalGrid.Location = new System.Drawing.Point(0, 0);
-      this.TotalGrid.Margin = new System.Windows.Forms.Padding(4);
       this.TotalGrid.Name = "TotalGrid";
       this.TotalGrid.RowTemplate.Height = 23;
-      this.TotalGrid.Size = new System.Drawing.Size(570, 745);
+      this.TotalGrid.Size = new System.Drawing.Size(428, 596);
       this.TotalGrid.TabIndex = 19;
       // 
       // total_name
@@ -436,9 +427,10 @@
       this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.panel1.Controls.Add(this.DinnerRad);
       this.panel1.Controls.Add(this.LunchRad);
-      this.panel1.Location = new System.Drawing.Point(899, 12);
+      this.panel1.Location = new System.Drawing.Point(674, 10);
+      this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(133, 30);
+      this.panel1.Size = new System.Drawing.Size(100, 24);
       this.panel1.TabIndex = 19;
       // 
       // StartBtn
@@ -448,10 +440,9 @@
       this.StartBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
       this.StartBtn.Font = new System.Drawing.Font("幼圆", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
       this.StartBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(66)))), ((int)(((byte)(2)))));
-      this.StartBtn.Location = new System.Drawing.Point(1168, 5);
-      this.StartBtn.Margin = new System.Windows.Forms.Padding(4);
+      this.StartBtn.Location = new System.Drawing.Point(876, 4);
       this.StartBtn.Name = "StartBtn";
-      this.StartBtn.Size = new System.Drawing.Size(100, 40);
+      this.StartBtn.Size = new System.Drawing.Size(75, 32);
       this.StartBtn.TabIndex = 20;
       this.StartBtn.Text = " 开始";
       this.StartBtn.UseVisualStyleBackColor = true;
@@ -464,10 +455,9 @@
       this.StopBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
       this.StopBtn.Font = new System.Drawing.Font("幼圆", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
       this.StopBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(83)))), ((int)(((byte)(0)))), ((int)(((byte)(6)))));
-      this.StopBtn.Location = new System.Drawing.Point(1168, 5);
-      this.StopBtn.Margin = new System.Windows.Forms.Padding(4);
+      this.StopBtn.Location = new System.Drawing.Point(876, 4);
       this.StopBtn.Name = "StopBtn";
-      this.StopBtn.Size = new System.Drawing.Size(100, 40);
+      this.StopBtn.Size = new System.Drawing.Size(75, 32);
       this.StopBtn.TabIndex = 21;
       this.StopBtn.Text = " 停止";
       this.StopBtn.UseVisualStyleBackColor = true;
@@ -476,11 +466,11 @@
       // 
       // Form1
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.AutoSize = true;
       this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.ClientSize = new System.Drawing.Size(1284, 851);
+      this.ClientSize = new System.Drawing.Size(963, 681);
       this.Controls.Add(this.StartBtn);
       this.Controls.Add(this.StopBtn);
       this.Controls.Add(this.panel1);
@@ -491,7 +481,6 @@
       this.Controls.Add(this.label2);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.TargetUrlTex);
-      this.Margin = new System.Windows.Forms.Padding(4);
       this.Name = "Form1";
       this.Text = "订餐吧";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
