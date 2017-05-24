@@ -20,6 +20,8 @@ namespace TakeOutSystem
     private HttpServer m_curServer;
     private float m_maxPrise = -1;
     private string m_lastWebSite = "";
+    private string m_curStatusStr = "";
+    private bool m_bWait = false;
     public Form1()
     {
       InitializeComponent();
@@ -42,71 +44,90 @@ namespace TakeOutSystem
 
     private void StartBtn_Click(object sender, EventArgs e)
     {
-      if (TargetUrlTex.Text.Length <= 0)
+      ShowWait(true, "服务开启中");
+      try
       {
-        MessageBox.Show("请填入外卖网址");
-        return;
-      }
+        if (TargetUrlTex.Text.Length <= 0)
+        {
+          MessageBox.Show("请填入外卖网址");
+          return;
+        }
 
-      if(m_lastWebSite != "" && TargetUrlTex.Text != m_lastWebSite && DataManager.instance.ordersDataTable.Rows.Count > 0)
+        if (m_lastWebSite != "" && TargetUrlTex.Text != m_lastWebSite && DataManager.instance.ordersDataTable.Rows.Count > 0)
+        {
+          MessageBox.Show("网址已更改，请先清楚原有数据");
+          return;
+        }
+
+        int curPort = 0;
+        if (!int.TryParse(PortTex.Text, out curPort) || curPort <= 0)
+        {
+          MessageBox.Show("端口错误");
+          return;
+        }
+
+        List<WebSiteAnalyseResult> result;
+        string shopName;
+        var errorMsg = WebSiteAnalyser.Analyser(TargetUrlTex.Text, out result, out shopName);
+
+        if (errorMsg != "")
+        {
+          MessageBox.Show(errorMsg);
+          return;
+        }
+
+        DataManager.instance.ClearMenuData();
+        foreach (var ret in result)
+        {
+          DataManager.instance.AddNewMenuData(ret.name, ret.prise, ret.has_ex, ret.img_path);
+        }
+        m_lastWebSite = TargetUrlTex.Text;
+        string webSiteStr = WebSiteGenerator.GetWebSiteStr("订餐吧", shopName, TargetUrlTex.Text, m_maxPrise, DataManager.instance.menuData);
+        if (webSiteStr == "")
+        {
+          MessageBox.Show("网页生成失败");
+          return;
+        }
+
+        TryStopServer();
+        var curIp = Dns.GetHostAddresses(Dns.GetHostName()).Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).First();
+        m_curServer = new MainHttpServer(curIp, curPort);
+        MainHttpServer.webSetString = webSiteStr;
+        m_httpThread = new Thread(new ThreadStart(m_curServer.listen));
+        m_httpThread.IsBackground = true;
+        m_httpThread.Start();
+
+        PutOutUrlTex.Text = curIp.ToString() + ":" + curPort;
+
+        MessageBox.Show("服务开启成功");
+
+        StartBtn.Visible = false;
+        StopBtn.Visible = true;
+        SetStatusMsg("服务已开启");
+      }
+      catch
       {
-        MessageBox.Show("网址已更改，请先清楚原有数据");
-        return;
-      }
 
-      int curPort = 0;
-      if (!int.TryParse(PortTex.Text, out curPort) || curPort <= 0)
+      }
+      finally
       {
-        MessageBox.Show("端口错误");
-        return;
+        ShowWait(false);
       }
-
-      List<WebSiteAnalyseResult> result;
-      string shopName;
-      var errorMsg = WebSiteAnalyser.Analyser(TargetUrlTex.Text, out result, out shopName);
-
-      if(errorMsg != "")
-      {
-        MessageBox.Show(errorMsg);
-        return;
-      }
-
-      DataManager.instance.ClearMenuData();
-      foreach (var ret in result)
-      {
-        DataManager.instance.AddNewMenuData(ret.name, ret.prise, ret.has_ex, ret.img_path);
-      }
-      m_lastWebSite = TargetUrlTex.Text;
-      string webSiteStr = WebSiteGenerator.GetWebSiteStr("订餐吧", shopName, TargetUrlTex.Text, m_maxPrise, DataManager.instance.menuData);
-      if (webSiteStr == "")
-      {
-        MessageBox.Show("网页生成失败");
-        return;
-      }
-
-      TryStopServer();
-      var curIp = Dns.GetHostAddresses(Dns.GetHostName()).Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).First();
-      m_curServer = new MainHttpServer(curIp, curPort);
-      MainHttpServer.webSetString = webSiteStr;
-      m_httpThread = new Thread(new ThreadStart(m_curServer.listen));
-      m_httpThread.IsBackground = true;
-      m_httpThread.Start();
-
-      PutOutUrlTex.Text = curIp.ToString() + ":" + curPort;
-
-      MessageBox.Show("服务开启成功");
-
-      StartBtn.Visible = false;
-      StopBtn.Visible = true;
-
     }
 
     private void StopBtn_Click(object sender, EventArgs e)
     {
-      TryStopServer();
+      ShowWait(true, "服务关闭中");
+      if (!TryStopServer())
+      {
+        ShowWait(false);
+        return;
+      }
       MessageBox.Show("服务已停止");
       StartBtn.Visible = true;
       StopBtn.Visible = false;
+      ShowWait(false);
+      SetStatusMsg("服务已停止");
     }
 
     private bool TryStopServer(bool bForce = false)
@@ -140,7 +161,7 @@ namespace TakeOutSystem
         DinnerRad.Checked = true;
       }
 
-      ShowWait(true, "初始化中,");
+      ShowWait(true, "初始化中");
 
       DataManager.instance.Init(this);
       DetailGrid.DataSource = DataManager.instance.detailDataTable.DefaultView;
@@ -148,6 +169,7 @@ namespace TakeOutSystem
       TotalGrid.DataSource = DataManager.instance.totalDataTable.DefaultView;
       WebResourceManager.instance.Init();
       ShowWait(false);
+      SetStatusMsg("准备就绪");
       splitContainer1.SplitterDistance = (int)(splitContainer1.Width * 0.6);
       splitContainer2.SplitterDistance = (int)(splitContainer2.Height * 0.7);
 
@@ -166,20 +188,6 @@ namespace TakeOutSystem
         return "";
       }
       return File.ReadAllText(rootPath + "\\Web.html");
-    }
-
-    private void ShowWait(bool bShow, string desc = "")
-    {
-      //if(bShow)
-      //{
-      //  WaitPanel.Show();
-      //  WaitLabel.Text = desc + "请稍等..";
-      //  WaitLabel.Location = new Point(Size.Width>>1, Size.Height>>1);
-      //}
-      //else
-      //{
-      //  WaitPanel.Hide();
-      //}
     }
 
     private void DetailGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -242,6 +250,21 @@ namespace TakeOutSystem
       if(ShowAllChb.Checked)
       {
         DataManager.instance.ordersDataTable.DefaultView.RowFilter = "";
+      }
+    }
+
+    private void ShowWait(bool bShow, string waitMsg = "")
+    {
+      StatusStripLabel.Text = bShow ? (waitMsg.Length > 0 ? waitMsg + ",请稍等..." : "请稍等...") : m_curStatusStr;
+      m_bWait = bShow;
+    }
+
+    private void SetStatusMsg(string status)
+    {
+      m_curStatusStr = status;
+      if (!m_bWait)
+      {
+        StatusStripLabel.Text = m_curStatusStr;
       }
     }
   }

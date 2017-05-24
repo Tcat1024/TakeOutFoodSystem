@@ -65,6 +65,10 @@
       this.panel1 = new System.Windows.Forms.Panel();
       this.StartBtn = new System.Windows.Forms.Button();
       this.StopBtn = new System.Windows.Forms.Button();
+      this.BottomStrip = new System.Windows.Forms.ToolStrip();
+      this.StatusStripLabel = new System.Windows.Forms.ToolStripLabel();
+      this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       ((System.ComponentModel.ISupportInitialize)(this.DetailGrid)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.OrderGrid)).BeginInit();
       this.OpenGroup.SuspendLayout();
@@ -78,6 +82,7 @@
       this.splitContainer2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.TotalGrid)).BeginInit();
       this.panel1.SuspendLayout();
+      this.BottomStrip.SuspendLayout();
       this.SuspendLayout();
       // 
       // TargetUrlTex
@@ -129,7 +134,7 @@
       this.DetailGrid.Name = "DetailGrid";
       this.DetailGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
       this.DetailGrid.RowTemplate.Height = 23;
-      this.DetailGrid.Size = new System.Drawing.Size(432, 232);
+      this.DetailGrid.Size = new System.Drawing.Size(432, 221);
       this.DetailGrid.TabIndex = 9;
       this.DetailGrid.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DetailGrid_CellPainting);
       this.DetailGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DetailGrid_CellValueChanged);
@@ -242,7 +247,7 @@
       this.OrderGrid.Location = new System.Drawing.Point(0, 0);
       this.OrderGrid.Name = "OrderGrid";
       this.OrderGrid.RowTemplate.Height = 23;
-      this.OrderGrid.Size = new System.Drawing.Size(432, 361);
+      this.OrderGrid.Size = new System.Drawing.Size(432, 346);
       this.OrderGrid.TabIndex = 17;
       // 
       // customer
@@ -305,10 +310,10 @@
       this.OpenGroup.Controls.Add(this.ExportBtn);
       this.OpenGroup.Controls.Add(this.ClearBtn);
       this.OpenGroup.Location = new System.Drawing.Point(0, 36);
-      this.OpenGroup.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.OpenGroup.Margin = new System.Windows.Forms.Padding(2);
       this.OpenGroup.MinimumSize = new System.Drawing.Size(742, 490);
       this.OpenGroup.Name = "OpenGroup";
-      this.OpenGroup.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.OpenGroup.Padding = new System.Windows.Forms.Padding(2);
       this.OpenGroup.Size = new System.Drawing.Size(963, 644);
       this.OpenGroup.TabIndex = 19;
       this.OpenGroup.TabStop = false;
@@ -317,7 +322,7 @@
       // 
       this.ShowAllChb.AutoSize = true;
       this.ShowAllChb.Location = new System.Drawing.Point(147, 22);
-      this.ShowAllChb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.ShowAllChb.Margin = new System.Windows.Forms.Padding(2);
       this.ShowAllChb.Name = "ShowAllChb";
       this.ShowAllChb.Size = new System.Drawing.Size(72, 16);
       this.ShowAllChb.TabIndex = 22;
@@ -331,7 +336,7 @@
       this.AllPeopleChb.Checked = true;
       this.AllPeopleChb.CheckState = System.Windows.Forms.CheckState.Checked;
       this.AllPeopleChb.Location = new System.Drawing.Point(9, 22);
-      this.AllPeopleChb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.AllPeopleChb.Margin = new System.Windows.Forms.Padding(2);
       this.AllPeopleChb.Name = "AllPeopleChb";
       this.AllPeopleChb.Size = new System.Drawing.Size(120, 16);
       this.AllPeopleChb.TabIndex = 21;
@@ -345,7 +350,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.splitContainer1.Location = new System.Drawing.Point(0, 46);
-      this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
       this.splitContainer1.Name = "splitContainer1";
       // 
       // splitContainer1.Panel1
@@ -355,7 +360,7 @@
       // splitContainer1.Panel2
       // 
       this.splitContainer1.Panel2.Controls.Add(this.TotalGrid);
-      this.splitContainer1.Size = new System.Drawing.Size(863, 596);
+      this.splitContainer1.Size = new System.Drawing.Size(863, 570);
       this.splitContainer1.SplitterDistance = 432;
       this.splitContainer1.SplitterWidth = 3;
       this.splitContainer1.TabIndex = 20;
@@ -364,7 +369,7 @@
       // 
       this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
       this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-      this.splitContainer2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.splitContainer2.Margin = new System.Windows.Forms.Padding(2);
       this.splitContainer2.Name = "splitContainer2";
       this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
       // 
@@ -375,8 +380,8 @@
       // splitContainer2.Panel2
       // 
       this.splitContainer2.Panel2.Controls.Add(this.OrderGrid);
-      this.splitContainer2.Size = new System.Drawing.Size(432, 596);
-      this.splitContainer2.SplitterDistance = 232;
+      this.splitContainer2.Size = new System.Drawing.Size(432, 570);
+      this.splitContainer2.SplitterDistance = 221;
       this.splitContainer2.SplitterWidth = 3;
       this.splitContainer2.TabIndex = 0;
       // 
@@ -392,7 +397,7 @@
       this.TotalGrid.Location = new System.Drawing.Point(0, 0);
       this.TotalGrid.Name = "TotalGrid";
       this.TotalGrid.RowTemplate.Height = 23;
-      this.TotalGrid.Size = new System.Drawing.Size(428, 596);
+      this.TotalGrid.Size = new System.Drawing.Size(428, 570);
       this.TotalGrid.TabIndex = 19;
       // 
       // total_name
@@ -428,7 +433,7 @@
       this.panel1.Controls.Add(this.DinnerRad);
       this.panel1.Controls.Add(this.LunchRad);
       this.panel1.Location = new System.Drawing.Point(674, 10);
-      this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+      this.panel1.Margin = new System.Windows.Forms.Padding(2);
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(100, 24);
       this.panel1.TabIndex = 19;
@@ -464,6 +469,38 @@
       this.StopBtn.Visible = false;
       this.StopBtn.Click += new System.EventHandler(this.StopBtn_Click);
       // 
+      // BottomStrip
+      // 
+      this.BottomStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.BottomStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel2,
+            this.StatusStripLabel,
+            this.toolStripSeparator1});
+      this.BottomStrip.Location = new System.Drawing.Point(0, 656);
+      this.BottomStrip.Name = "BottomStrip";
+      this.BottomStrip.Size = new System.Drawing.Size(963, 25);
+      this.BottomStrip.TabIndex = 24;
+      this.BottomStrip.Text = "BottomStrip";
+      // 
+      // StatusStripLabel
+      // 
+      this.StatusStripLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+      this.StatusStripLabel.Name = "StatusStripLabel";
+      this.StatusStripLabel.Size = new System.Drawing.Size(68, 22);
+      this.StatusStripLabel.Text = "服务未开启";
+      // 
+      // toolStripLabel2
+      // 
+      this.toolStripLabel2.Name = "toolStripLabel2";
+      this.toolStripLabel2.Size = new System.Drawing.Size(175, 22);
+      this.toolStripLabel2.Text = "@Github.Tcat1024.W.H.M@o";
+      // 
+      // toolStripSeparator1
+      // 
+      this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+      this.toolStripSeparator1.Name = "toolStripSeparator1";
+      this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -471,6 +508,7 @@
       this.AutoSize = true;
       this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.ClientSize = new System.Drawing.Size(963, 681);
+      this.Controls.Add(this.BottomStrip);
       this.Controls.Add(this.StartBtn);
       this.Controls.Add(this.StopBtn);
       this.Controls.Add(this.panel1);
@@ -500,6 +538,8 @@
       ((System.ComponentModel.ISupportInitialize)(this.TotalGrid)).EndInit();
       this.panel1.ResumeLayout(false);
       this.panel1.PerformLayout();
+      this.BottomStrip.ResumeLayout(false);
+      this.BottomStrip.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -543,6 +583,10 @@
     private System.Windows.Forms.DataGridViewTextBoxColumn total_ex;
     private System.Windows.Forms.DataGridViewTextBoxColumn total_num;
     private System.Windows.Forms.DataGridViewTextBoxColumn total_id;
+    private System.Windows.Forms.ToolStrip BottomStrip;
+    private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+    private System.Windows.Forms.ToolStripLabel StatusStripLabel;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
   }
 }
 
