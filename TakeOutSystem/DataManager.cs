@@ -246,9 +246,10 @@ namespace TakeOutSystem
             return "无订餐数据";
           }
           var rowData = detailDataTable.Select("name='" + name + "'");
-          if (rowData.Length == 0)
+          string resultString;
+          if (rowData.Length == 0 || (resultString = rowData[0]["detailStr"].ToString()).Length == 0)
             return "尚无您的订餐数据";
-          return rowData[0]["detailStr"].ToString();
+          return resultString;
         }
       }
       else
