@@ -76,14 +76,14 @@ namespace TakeOutSystem
         {
           handlePOSTRequest();
         }
+        outputStream.Flush();
+        // bs.Flush(); // flush any remaining output
       }
       catch (Exception e)
       {
         Console.WriteLine("Exception: " + e.ToString());
         writeFailure();
       }
-      outputStream.Flush();
-      // bs.Flush(); // flush any remaining output
       m_inputStream = null; outputStream = null; // bs = null;    
       socket.Close();
     }

@@ -11,7 +11,7 @@ namespace TakeOutSystem
   {
     static private string htmlTemplatePath = "/configs/Web.html";
     static private string contentTemplatePath = "/configs/Content.html";
-    static public string GetWebSiteStr(string title, string restName, string targetWebSite, float priseMax, List<MenuData> menuDatas)
+    static public string GetWebSiteStr(string title, string restName, string targetWebSite, float priseMax, float boxPrice, List<MenuData> menuDatas)
     {
       if (null == menuDatas || menuDatas.Count <= 0)
         return "";
@@ -32,7 +32,7 @@ namespace TakeOutSystem
       {
         contentBuilder.AppendFormat(contentTemplate, data.img_path, data.id, data.name, data.has_ex.ToString(), data.prise, data.has_ex ? "visible" : "hidden");
       }
-      return string.Format(result, title, restName, priseMax <= 0 ? "" : priseMax.ToString(), targetWebSite, contentBuilder.ToString());
+      return string.Format(result, title, restName, priseMax <= 0 ? "" : priseMax.ToString(), targetWebSite, contentBuilder.ToString(), boxPrice);
     }
   }
 }

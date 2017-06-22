@@ -53,6 +53,7 @@
       this.order_prise = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.order_num = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.OpenGroup = new System.Windows.Forms.GroupBox();
+      this.allowOrderChb = new System.Windows.Forms.CheckBox();
       this.ShowAllChb = new System.Windows.Forms.CheckBox();
       this.AllPeopleChb = new System.Windows.Forms.CheckBox();
       this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -65,10 +66,12 @@
       this.panel1 = new System.Windows.Forms.Panel();
       this.StartBtn = new System.Windows.Forms.Button();
       this.StopBtn = new System.Windows.Forms.Button();
-      this.BottomStrip = new System.Windows.Forms.ToolStrip();
-      this.StatusStripLabel = new System.Windows.Forms.ToolStripLabel();
       this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+      this.StatusStripLabel = new System.Windows.Forms.ToolStripLabel();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+      this.BottomStrip = new System.Windows.Forms.ToolStrip();
+      this.BoxPriceTex = new System.Windows.Forms.TextBox();
+      this.label4 = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.DetailGrid)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.OrderGrid)).BeginInit();
       this.OpenGroup.SuspendLayout();
@@ -91,7 +94,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.TargetUrlTex.Location = new System.Drawing.Point(66, 12);
       this.TargetUrlTex.Name = "TargetUrlTex";
-      this.TargetUrlTex.Size = new System.Drawing.Size(485, 21);
+      this.TargetUrlTex.Size = new System.Drawing.Size(369, 21);
       this.TargetUrlTex.TabIndex = 0;
       // 
       // label1
@@ -106,7 +109,7 @@
       // MaxMoneyTex
       // 
       this.MaxMoneyTex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.MaxMoneyTex.Location = new System.Drawing.Point(622, 11);
+      this.MaxMoneyTex.Location = new System.Drawing.Point(506, 12);
       this.MaxMoneyTex.Name = "MaxMoneyTex";
       this.MaxMoneyTex.Size = new System.Drawing.Size(40, 21);
       this.MaxMoneyTex.TabIndex = 6;
@@ -116,7 +119,7 @@
       // 
       this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(557, 15);
+      this.label2.Location = new System.Drawing.Point(441, 15);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(59, 12);
       this.label2.TabIndex = 5;
@@ -134,7 +137,7 @@
       this.DetailGrid.Name = "DetailGrid";
       this.DetailGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
       this.DetailGrid.RowTemplate.Height = 23;
-      this.DetailGrid.Size = new System.Drawing.Size(432, 221);
+      this.DetailGrid.Size = new System.Drawing.Size(368, 214);
       this.DetailGrid.TabIndex = 9;
       this.DetailGrid.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DetailGrid_CellPainting);
       this.DetailGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DetailGrid_CellValueChanged);
@@ -163,7 +166,7 @@
       // ExportBtn
       // 
       this.ExportBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.ExportBtn.Location = new System.Drawing.Point(876, 586);
+      this.ExportBtn.Location = new System.Drawing.Point(883, 568);
       this.ExportBtn.Name = "ExportBtn";
       this.ExportBtn.Size = new System.Drawing.Size(75, 23);
       this.ExportBtn.TabIndex = 10;
@@ -196,26 +199,26 @@
       // PutOutUrlTex
       // 
       this.PutOutUrlTex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.PutOutUrlTex.Location = new System.Drawing.Point(524, 20);
+      this.PutOutUrlTex.Location = new System.Drawing.Point(531, 20);
       this.PutOutUrlTex.Name = "PutOutUrlTex";
       this.PutOutUrlTex.ReadOnly = true;
       this.PutOutUrlTex.Size = new System.Drawing.Size(340, 21);
-      this.PutOutUrlTex.TabIndex = 13;
+      this.PutOutUrlTex.TabIndex = 9;
       // 
       // PortTex
       // 
       this.PortTex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.PortTex.Location = new System.Drawing.Point(821, 12);
+      this.PortTex.Location = new System.Drawing.Point(828, 12);
       this.PortTex.Name = "PortTex";
       this.PortTex.Size = new System.Drawing.Size(40, 21);
-      this.PortTex.TabIndex = 14;
+      this.PortTex.TabIndex = 10;
       this.PortTex.Text = "8080";
       // 
       // label3
       // 
       this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(780, 15);
+      this.label3.Location = new System.Drawing.Point(787, 15);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(35, 12);
       this.label3.TabIndex = 15;
@@ -224,7 +227,7 @@
       // ClearBtn
       // 
       this.ClearBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.ClearBtn.Location = new System.Drawing.Point(876, 17);
+      this.ClearBtn.Location = new System.Drawing.Point(883, 17);
       this.ClearBtn.Name = "ClearBtn";
       this.ClearBtn.Size = new System.Drawing.Size(75, 23);
       this.ClearBtn.TabIndex = 16;
@@ -247,7 +250,7 @@
       this.OrderGrid.Location = new System.Drawing.Point(0, 0);
       this.OrderGrid.Name = "OrderGrid";
       this.OrderGrid.RowTemplate.Height = 23;
-      this.OrderGrid.Size = new System.Drawing.Size(432, 346);
+      this.OrderGrid.Size = new System.Drawing.Size(368, 335);
       this.OrderGrid.TabIndex = 17;
       // 
       // customer
@@ -303,6 +306,7 @@
       this.OpenGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+      this.OpenGroup.Controls.Add(this.allowOrderChb);
       this.OpenGroup.Controls.Add(this.ShowAllChb);
       this.OpenGroup.Controls.Add(this.AllPeopleChb);
       this.OpenGroup.Controls.Add(this.splitContainer1);
@@ -314,9 +318,23 @@
       this.OpenGroup.MinimumSize = new System.Drawing.Size(742, 490);
       this.OpenGroup.Name = "OpenGroup";
       this.OpenGroup.Padding = new System.Windows.Forms.Padding(2);
-      this.OpenGroup.Size = new System.Drawing.Size(963, 644);
+      this.OpenGroup.Size = new System.Drawing.Size(970, 626);
       this.OpenGroup.TabIndex = 19;
       this.OpenGroup.TabStop = false;
+      // 
+      // allowOrderChb
+      // 
+      this.allowOrderChb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.allowOrderChb.AutoSize = true;
+      this.allowOrderChb.Checked = true;
+      this.allowOrderChb.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.allowOrderChb.Location = new System.Drawing.Point(886, 82);
+      this.allowOrderChb.Name = "allowOrderChb";
+      this.allowOrderChb.Size = new System.Drawing.Size(72, 16);
+      this.allowOrderChb.TabIndex = 23;
+      this.allowOrderChb.Text = "允许订餐";
+      this.allowOrderChb.UseVisualStyleBackColor = true;
+      this.allowOrderChb.CheckStateChanged += new System.EventHandler(this.allowOrderChb_CheckStateChanged);
       // 
       // ShowAllChb
       // 
@@ -360,8 +378,8 @@
       // splitContainer1.Panel2
       // 
       this.splitContainer1.Panel2.Controls.Add(this.TotalGrid);
-      this.splitContainer1.Size = new System.Drawing.Size(863, 570);
-      this.splitContainer1.SplitterDistance = 432;
+      this.splitContainer1.Size = new System.Drawing.Size(870, 552);
+      this.splitContainer1.SplitterDistance = 368;
       this.splitContainer1.SplitterWidth = 3;
       this.splitContainer1.TabIndex = 20;
       // 
@@ -380,8 +398,8 @@
       // splitContainer2.Panel2
       // 
       this.splitContainer2.Panel2.Controls.Add(this.OrderGrid);
-      this.splitContainer2.Size = new System.Drawing.Size(432, 570);
-      this.splitContainer2.SplitterDistance = 221;
+      this.splitContainer2.Size = new System.Drawing.Size(368, 552);
+      this.splitContainer2.SplitterDistance = 214;
       this.splitContainer2.SplitterWidth = 3;
       this.splitContainer2.TabIndex = 0;
       // 
@@ -397,7 +415,7 @@
       this.TotalGrid.Location = new System.Drawing.Point(0, 0);
       this.TotalGrid.Name = "TotalGrid";
       this.TotalGrid.RowTemplate.Height = 23;
-      this.TotalGrid.Size = new System.Drawing.Size(428, 570);
+      this.TotalGrid.Size = new System.Drawing.Size(499, 552);
       this.TotalGrid.TabIndex = 19;
       // 
       // total_name
@@ -432,7 +450,7 @@
       this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.panel1.Controls.Add(this.DinnerRad);
       this.panel1.Controls.Add(this.LunchRad);
-      this.panel1.Location = new System.Drawing.Point(674, 10);
+      this.panel1.Location = new System.Drawing.Point(681, 10);
       this.panel1.Margin = new System.Windows.Forms.Padding(2);
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(100, 24);
@@ -445,10 +463,10 @@
       this.StartBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
       this.StartBtn.Font = new System.Drawing.Font("幼圆", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
       this.StartBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(66)))), ((int)(((byte)(2)))));
-      this.StartBtn.Location = new System.Drawing.Point(876, 4);
+      this.StartBtn.Location = new System.Drawing.Point(883, 4);
       this.StartBtn.Name = "StartBtn";
       this.StartBtn.Size = new System.Drawing.Size(75, 32);
-      this.StartBtn.TabIndex = 20;
+      this.StartBtn.TabIndex = 8;
       this.StartBtn.Text = " 开始";
       this.StartBtn.UseVisualStyleBackColor = true;
       this.StartBtn.Click += new System.EventHandler(this.StartBtn_Click);
@@ -460,7 +478,7 @@
       this.StopBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
       this.StopBtn.Font = new System.Drawing.Font("幼圆", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
       this.StopBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(83)))), ((int)(((byte)(0)))), ((int)(((byte)(6)))));
-      this.StopBtn.Location = new System.Drawing.Point(876, 4);
+      this.StopBtn.Location = new System.Drawing.Point(883, 4);
       this.StopBtn.Name = "StopBtn";
       this.StopBtn.Size = new System.Drawing.Size(75, 32);
       this.StopBtn.TabIndex = 21;
@@ -469,18 +487,11 @@
       this.StopBtn.Visible = false;
       this.StopBtn.Click += new System.EventHandler(this.StopBtn_Click);
       // 
-      // BottomStrip
+      // toolStripLabel2
       // 
-      this.BottomStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.BottomStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel2,
-            this.StatusStripLabel,
-            this.toolStripSeparator1});
-      this.BottomStrip.Location = new System.Drawing.Point(0, 656);
-      this.BottomStrip.Name = "BottomStrip";
-      this.BottomStrip.Size = new System.Drawing.Size(963, 25);
-      this.BottomStrip.TabIndex = 24;
-      this.BottomStrip.Text = "BottomStrip";
+      this.toolStripLabel2.Name = "toolStripLabel2";
+      this.toolStripLabel2.Size = new System.Drawing.Size(175, 22);
+      this.toolStripLabel2.Text = "@Github.Tcat1024.W.H.M@o";
       // 
       // StatusStripLabel
       // 
@@ -489,25 +500,50 @@
       this.StatusStripLabel.Size = new System.Drawing.Size(68, 22);
       this.StatusStripLabel.Text = "服务未开启";
       // 
-      // toolStripLabel2
-      // 
-      this.toolStripLabel2.Name = "toolStripLabel2";
-      this.toolStripLabel2.Size = new System.Drawing.Size(175, 22);
-      this.toolStripLabel2.Text = "@Github.Tcat1024.W.H.M@o";
-      // 
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
       this.toolStripSeparator1.Name = "toolStripSeparator1";
       this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
       // 
+      // BottomStrip
+      // 
+      this.BottomStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.BottomStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel2,
+            this.StatusStripLabel,
+            this.toolStripSeparator1});
+      this.BottomStrip.Location = new System.Drawing.Point(0, 638);
+      this.BottomStrip.Name = "BottomStrip";
+      this.BottomStrip.Size = new System.Drawing.Size(970, 25);
+      this.BottomStrip.TabIndex = 24;
+      this.BottomStrip.Text = "BottomStrip";
+      // 
+      // BoxPriceTex
+      // 
+      this.BoxPriceTex.Location = new System.Drawing.Point(605, 12);
+      this.BoxPriceTex.Name = "BoxPriceTex";
+      this.BoxPriceTex.Size = new System.Drawing.Size(49, 21);
+      this.BoxPriceTex.TabIndex = 7;
+      // 
+      // label4
+      // 
+      this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.label4.AutoSize = true;
+      this.label4.Location = new System.Drawing.Point(552, 15);
+      this.label4.Name = "label4";
+      this.label4.Size = new System.Drawing.Size(47, 12);
+      this.label4.TabIndex = 25;
+      this.label4.Text = "餐盒费:";
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.AutoSize = true;
       this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.ClientSize = new System.Drawing.Size(963, 681);
+      this.ClientSize = new System.Drawing.Size(970, 663);
+      this.Controls.Add(this.label4);
+      this.Controls.Add(this.BoxPriceTex);
       this.Controls.Add(this.BottomStrip);
       this.Controls.Add(this.StartBtn);
       this.Controls.Add(this.StopBtn);
@@ -520,6 +556,7 @@
       this.Controls.Add(this.label1);
       this.Controls.Add(this.TargetUrlTex);
       this.Name = "Form1";
+      this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
       this.Text = "订餐吧";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
       this.Load += new System.EventHandler(this.Form1_Load);
@@ -583,10 +620,13 @@
     private System.Windows.Forms.DataGridViewTextBoxColumn total_ex;
     private System.Windows.Forms.DataGridViewTextBoxColumn total_num;
     private System.Windows.Forms.DataGridViewTextBoxColumn total_id;
-    private System.Windows.Forms.ToolStrip BottomStrip;
     private System.Windows.Forms.ToolStripLabel toolStripLabel2;
     private System.Windows.Forms.ToolStripLabel StatusStripLabel;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+    private System.Windows.Forms.ToolStrip BottomStrip;
+    private System.Windows.Forms.CheckBox allowOrderChb;
+    private System.Windows.Forms.TextBox BoxPriceTex;
+    private System.Windows.Forms.Label label4;
   }
 }
 

@@ -79,6 +79,14 @@ body
 	box-shadow: 0px 5px #687e00;
 	color: #687e00;
 }}
+.query{{
+	left:0;
+	margin-left:0;
+	background: #b7de01;
+	box-shadow: 0px 5px #687e00;
+	color: #687e00;
+	width: 100px;
+}}
 .submit:hover {{
 	background: #99ba01;
 	box-shadow: 0px 4px #435100;
@@ -135,6 +143,7 @@ body
 <div>
 <span>请输入您的姓名：</span>
 <span><input type="text" id="nameinput" name = "name"/></span>
+<span id = "querybtn" class = "btn btn-small query" onclick="Query()">查询已点菜单</span>
 </div>
 <div><a href="{3}">网址点此</a></div>
 <div class = "menu-list">
@@ -146,9 +155,9 @@ body
 	<span id = "name" class="menu-content-title">1</span>
 	<strong>¥</strong>
 	<strong id = "prise" class="menu-content-prise">1</strong>
-	<img class = "menu-content-imgs" src="imgs/del.png" height="20" width="20" onclick="DeleteFromCart(this)"/>
+	<img id = "delete" class = "menu-content-imgs" src="imgs/del.png" height="20" width="20" onclick="DeleteFromCart(this)"/>
 	<strong id = "num">0</strong>
-	<img class = "menu-content-imgs" src="imgs/add.png" height="20" width="20" onclick="AddFromCart(this)" />
+	<img id = "add" class = "menu-content-imgs" src="imgs/add.png" height="20" width="20" onclick="AddFromCart(this)" />
 </div>
 <div calss = "cart-list" id = "cart">
 </div>
@@ -172,6 +181,7 @@ body
 	var targetcash = parseFloat(document.getElementById("targetcash").innerHTML);
 	var input = document.getElementById("nameinput");
 	var submitbtn = document.getElementById("submitbtn");
+	var boxPrize = {5};
 	function OnAddClick(paramater)
 	{{
 		Add(paramater.parentNode.parentNode);
@@ -351,6 +361,7 @@ body
 			
 		}}
 		var children = cartList.children || cartList.childNodes;
+		var totalcount = 0;
 		for(var i = 0; i < orderArray.length; ++i)
 		{{
 			var target = children[i];
@@ -376,12 +387,51 @@ body
 						break;
 					case "num":
 						nodes[j].innerHTML = tarOrder.num;
+					case "add":
+					case "delete":
+						nodes[j].style.display = "";
 						break;
 				}}
 			}}
 			totalnum += orderArray[i].prise * orderArray[i].num;
+			totalcount += orderArray[i].num;
 		}}
-		for(var i = orderArray.length; i < children.length; ++i)
+		var orderLength = orderArray.length;
+		if(boxPrize > 0 && totalcount > 0)
+		{{
+			var boxPrizeTotal = boxPrize * totalcount;
+			var target = children[orderLength];
+			if(target == null)
+			{{
+				target = template.cloneNode(true);
+				target.setAttribute("data-idx", orderLength);
+				cartList.appendChild(target);
+			}}
+			tarOrder.cartnode = target;
+			target.style.display = "";
+			var nodes = target.children || target.childNodes;
+			for(var j = 0; j < nodes.length; ++j)
+			{{
+				switch(nodes[j].id)
+				{{
+					case "name":
+						nodes[j].innerHTML = "餐盒费";
+						break;
+					case "prise":
+						nodes[j].innerHTML = boxPrizeTotal;
+						break;
+					case "add":
+					case "num":
+					case "delete":
+						nodes[j].style.display = "none";
+						break;
+				}}
+			}}
+			totalnum += boxPrizeTotal;
+			orderLength += 1;
+		}}
+		
+		for(var i = orderLength; i < children.length; ++i)
 		{{
 			children[i].style.display = "none";
 		}}
@@ -410,7 +460,33 @@ body
 			}}
 		}}
 	}}
-
+	function Query()
+	{{
+		if(input.value.length <= 0)
+		{{
+			alert("请输入姓名！");
+			return;
+		}}
+		var serilazedString = "query{{[name:"+input.value+"]}}";
+		var xmlhttp;
+		if (window.XMLHttpRequest)
+		{{
+		    //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+		    xmlhttp = new XMLHttpRequest();
+		}}
+		else
+		{{
+		    // IE6, IE5 浏览器执行代码
+		    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}}
+		xmlhttp.onreadystatechange=function(){{  
+	        if(xmlhttp.readyState==4){{  
+	        	alert(xmlhttp.responseText);
+	        }}  
+	    }};  
+	    xmlhttp.open("post",window.location.href,true);  
+	    xmlhttp.send(serilazedString);  
+	}}
 	function Submit()
 	{{
 		if(input.value.length <= 0)
@@ -444,11 +520,12 @@ body
 		}}
 		xmlhttp.onreadystatechange=function(){{  
 	        if(xmlhttp.readyState==4){{  
+	        	alert(xmlhttp.responseText);
 	            //HTTP响应已经完全接收才调用  
-	            if(xmlhttp.responseText == "success")
-	            	alert("提交完成，请勿重复提交");
-	            else
-	            	alert("提交失败:"+xmlhttp.responseText);
+	            //if(xmlhttp.responseText == "success")
+	            //	alert("提交完成，请勿重复提交");
+	            //else
+	            //	alert("提交失败:"+xmlhttp.responseText);
 	        }}  
 	    }};  
 	    xmlhttp.open("post",window.location.href,true);  

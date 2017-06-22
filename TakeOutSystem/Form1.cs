@@ -18,7 +18,7 @@ namespace TakeOutSystem
   {
     private Thread m_httpThread;
     private HttpServer m_curServer;
-    private float m_maxPrise = -1;
+    private float m_maxPrice = -1;
     private string m_lastWebSite = "";
     private string m_curStatusStr = "";
     private bool m_bWait = false;
@@ -29,6 +29,11 @@ namespace TakeOutSystem
     
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
+      if(MessageBox.Show("确定要关闭吗?","退出", MessageBoxButtons.YesNo) != DialogResult.Yes)
+      {
+        e.Cancel = true;
+        return;
+      }
       DataManager.instance.Release();
       TryStopServer(true);
     }
@@ -82,7 +87,13 @@ namespace TakeOutSystem
           DataManager.instance.AddNewMenuData(ret.name, ret.prise, ret.has_ex, ret.img_path);
         }
         m_lastWebSite = TargetUrlTex.Text;
-        string webSiteStr = WebSiteGenerator.GetWebSiteStr("订餐吧", shopName, TargetUrlTex.Text, m_maxPrise, DataManager.instance.menuData);
+
+        float boxPrice;
+        if(!float.TryParse(BoxPriceTex.Text, out boxPrice) || boxPrice < 0)
+        {
+          boxPrice = 0;
+        }
+        string webSiteStr = WebSiteGenerator.GetWebSiteStr("订餐吧", shopName, TargetUrlTex.Text, m_maxPrice, boxPrice, DataManager.instance.menuData);
         if (webSiteStr == "")
         {
           MessageBox.Show("网页生成失败");
@@ -92,6 +103,7 @@ namespace TakeOutSystem
         TryStopServer();
         var curIp = Dns.GetHostAddresses(Dns.GetHostName()).Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).First();
         m_curServer = new MainHttpServer(curIp, curPort);
+        DataManager.allowOrder = allowOrderChb.Checked;
         MainHttpServer.webSetString = webSiteStr;
         m_httpThread = new Thread(new ThreadStart(m_curServer.listen));
         m_httpThread.IsBackground = true;
@@ -173,9 +185,9 @@ namespace TakeOutSystem
       splitContainer1.SplitterDistance = (int)(splitContainer1.Width * 0.6);
       splitContainer2.SplitterDistance = (int)(splitContainer2.Height * 0.7);
 
-      if (!float.TryParse(MaxMoneyTex.Text, out m_maxPrise))
+      if (!float.TryParse(MaxMoneyTex.Text, out m_maxPrice))
       {
-        m_maxPrise = -1;
+        m_maxPrice = -1;
       }
     }
 
@@ -208,19 +220,19 @@ namespace TakeOutSystem
 
     private void MaxMoneyTex_TextChanged(object sender, EventArgs e)
     {
-      if(!float.TryParse(MaxMoneyTex.Text, out m_maxPrise))
+      if(!float.TryParse(MaxMoneyTex.Text, out m_maxPrice))
       {
-        m_maxPrise = -1;
+        m_maxPrice = -1;
       }
       DetailGrid.Refresh();
     }
 
     private void DetailGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
     {
-      if(m_maxPrise > 0 && e.ColumnIndex >= 0 &&　e.ColumnIndex < DetailGrid.Columns.Count && DetailGrid.Columns[e.ColumnIndex].Name == "totalPrise")
+      if(m_maxPrice > 0 && e.ColumnIndex >= 0 &&　e.ColumnIndex < DetailGrid.Columns.Count && DetailGrid.Columns[e.ColumnIndex].Name == "totalPrise")
       {
         var tarCell = DetailGrid.Rows[e.RowIndex].Cells[e.ColumnIndex];
-        if(m_maxPrise < (float)tarCell.Value)
+        if(m_maxPrice < (float)tarCell.Value)
         {
           tarCell.Style.BackColor = System.Drawing.Color.Red;
         }
@@ -233,7 +245,7 @@ namespace TakeOutSystem
 
     private void DetailGrid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
     {
-      if (m_maxPrise > 0 && e.ColumnIndex == 2 && e.Value is float && (float)e.Value > m_maxPrise)
+      if (m_maxPrice > 0 && e.ColumnIndex == 2 && e.Value is float && (float)e.Value > m_maxPrice)
       {
         e.CellStyle.BackColor = Color.Red;
       }
@@ -266,6 +278,11 @@ namespace TakeOutSystem
       {
         StatusStripLabel.Text = m_curStatusStr;
       }
+    }
+
+    private void allowOrderChb_CheckStateChanged(object sender, EventArgs e)
+    {
+      DataManager.allowOrder = allowOrderChb.Checked;
     }
   }
 }

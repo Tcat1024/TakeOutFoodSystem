@@ -29,6 +29,7 @@ namespace TakeOutSystem
   }
   public class DataManager
   {
+
     private class OrderDetail
     {
       public int id;
@@ -97,6 +98,7 @@ namespace TakeOutSystem
     public DataTable detailDataTable;
     public DataTable ordersDataTable;
     public DataTable totalDataTable;
+    static public bool allowOrder = true;
     public delegate void DataChangedEventHandler();
 
     public static DataManager instance
@@ -107,6 +109,7 @@ namespace TakeOutSystem
       }
     }
 
+    private Object m_tableLock = new Object();
     private bool m_showDefaultPople = true;
     private List<string> m_defaultNameList = new List<string>();
     private HashSet<string> m_defaultNameSet = new HashSet<string>();
@@ -230,27 +233,53 @@ namespace TakeOutSystem
 
     public string AnalyseOrderDataAsyn(string serilizedStr)
     {
-      if (m_menuData.Count <= 0)
+      if(serilizedStr.Substring(0, 5).ToLower() == "query") // 查询指令
       {
-        return "Error：未录入菜单，请联系服务器";
+        Match nameMatch = Regex.Match(serilizedStr, @"\[name:(\S+?)\]");
+        if (!nameMatch.Success || nameMatch.Groups.Count <= 0)
+          return "Error：姓名不正确";
+        string name = nameMatch.Groups[1].Value;
+        lock(m_tableLock)
+        {
+          if(detailDataTable == null)
+          {
+            return "无订餐数据";
+          }
+          var rowData = detailDataTable.Select("name='" + name + "'");
+          if (rowData.Length == 0)
+            return "尚无您的订餐数据";
+          return rowData[0]["detailStr"].ToString();
+        }
       }
-      Match nameMatch = Regex.Match(serilizedStr, @"\[name:(\S+?)\]");
-      if (!nameMatch.Success || nameMatch.Groups.Count <= 0)
-        return "Error：姓名不正确";
-
-      string name = nameMatch.Groups[1].Value;
-      var anaResult = Regex.Matches(serilizedStr, @"\[id\S+?:(\d+?)\],\[num\S+?:(\d+?)\],\[ex\S+?:(\S*?)\]");
-      List<OrderDetail> orderList = new List<OrderDetail>();
-      foreach (Match match in anaResult)
+      else
       {
-        if (match.Groups.Count < 4)
-          continue;
-        orderList.Add(new OrderDetail(int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value), match.Groups[3].Value.ToString()));
-      }
+        if (!allowOrder)
+        {
+          return "当前订餐已关闭，无法点餐；\r\n查询功能可正常使用;";
+        }
 
-      m_analysedDatas.Enqueue(new AnalysedData(name, orderList));
-      
-      return "success";
+        if (m_menuData.Count <= 0)
+        {
+          return "Error：未录入菜单，请联系服务器";
+        }
+        Match nameMatch = Regex.Match(serilizedStr, @"\[name:(\S+?)\]");
+        if (!nameMatch.Success || nameMatch.Groups.Count <= 0)
+          return "Error：姓名不正确";
+
+        string name = nameMatch.Groups[1].Value;
+        var anaResult = Regex.Matches(serilizedStr, @"\[id\S+?:(\d+?)\],\[num\S+?:(\d+?)\],\[ex\S+?:(\S*?)\]");
+        List<OrderDetail> orderList = new List<OrderDetail>();
+        foreach (Match match in anaResult)
+        {
+          if (match.Groups.Count < 4)
+            continue;
+          orderList.Add(new OrderDetail(int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value), match.Groups[3].Value.ToString()));
+        }
+
+        m_analysedDatas.Enqueue(new AnalysedData(name, orderList));
+
+        return "恭喜你，订餐成功！";
+      }
     }
 
     public void Clear()
@@ -292,12 +321,19 @@ namespace TakeOutSystem
 
     private void RefreshThread()
     {
-      InvokeDelegate method = InvokeMethod;
-      while (true)
+      try
       {
-        Thread.Sleep(500);
-        if (null != m_mainThreadControl)
-          m_mainThreadControl.BeginInvoke(method);
+        InvokeDelegate method = InvokeMethod;
+        while (true)
+        {
+          Thread.Sleep(500);
+          if (null != m_mainThreadControl)
+            m_mainThreadControl.BeginInvoke(method);
+        }
+      }
+      catch(Exception e)
+      {
+        MessageBox.Show(e.Message);
       }
     }
 
@@ -307,125 +343,129 @@ namespace TakeOutSystem
         return;
       bool bChanged = false;
       AnalysedData data;
-      detailDataTable.BeginLoadData();
-      ordersDataTable.BeginLoadData();
-      while (m_analysedDatas.TryDequeue(out data))
+      lock(m_tableLock)
       {
-        if (!bChanged)
-          bChanged = true;
-        DataRow tarRow = null;
-        if ((tarRow = detailDataTable.Rows.Find(data.name)) == null)
+        while (m_analysedDatas.TryDequeue(out data))
         {
-          if (data.orders.Count <= 0)
-            continue;
-          StringBuilder detailStrBuilder = new StringBuilder();
-          foreach (var order in data.orders)
+          if (!bChanged)
           {
-            if (order.id < 0 || order.id >= m_menuData.Count)
+            bChanged = true;
+            detailDataTable.BeginLoadData();
+            ordersDataTable.BeginLoadData();
+          }
+          DataRow tarRow = null;
+          if ((tarRow = detailDataTable.Rows.Find(data.name)) == null)
+          {
+            if (data.orders.Count <= 0)
               continue;
+            StringBuilder detailStrBuilder = new StringBuilder();
+            foreach (var order in data.orders)
+            {
+              if (order.id < 0 || order.id >= m_menuData.Count)
+                continue;
+              if (detailStrBuilder.Length == 0)
+              {
+                tarRow = detailDataTable.NewRow();
+                tarRow["name"] = data.name;
+                detailDataTable.Rows.Add(tarRow);
+              }
+              var menudata = m_menuData[order.id];
+              var newRow = ordersDataTable.NewRow();
+              newRow["customer"] = data.name;
+              newRow["order_id"] = order.id;
+              newRow["order_name"] = menudata.name;
+              newRow["order_prise"] = menudata.prise;
+              newRow["order_num"] = order.num;
+              newRow["order_ex"] = order.ex;
+              ordersDataTable.Rows.Add(newRow);
+
+              detailStrBuilder.Append(",");
+              detailStrBuilder.Append(menudata.name);
+              if (order.ex.Length > 0)
+              {
+                detailStrBuilder.Append("(");
+                detailStrBuilder.Append(order.ex);
+                detailStrBuilder.Append(")");
+              }
+              detailStrBuilder.Append("x");
+              detailStrBuilder.Append(order.num);
+            }
+
+            if (detailStrBuilder.Length > 0)
+            {
+              tarRow["detailStr"] = detailStrBuilder.Remove(0, 1).ToString();
+            }
+          }
+          else
+          {
+            DataRow[] childRows = tarRow.GetChildRows("customer_name");
+            foreach (var childRow in childRows)
+            {
+              ordersDataTable.Rows.Remove(childRow);
+            }
+            if (data.orders.Count <= 0)
+            {
+              if ((m_defaultNameSet.Count == 0 || !m_defaultNameSet.Contains(data.name)))
+                detailDataTable.Rows.Remove(tarRow);
+              else
+                tarRow["detailStr"] = "";
+              continue;
+            }
+            StringBuilder detailStrBuilder = new StringBuilder();
+            foreach (var order in data.orders)
+            {
+              if (order.id < 0 || order.id >= m_menuData.Count)
+                continue;
+              var menudata = m_menuData[order.id];
+              var newRow = ordersDataTable.NewRow();
+              newRow["customer"] = data.name;
+              newRow["order_id"] = order.id;
+              newRow["order_name"] = menudata.name;
+              newRow["order_prise"] = menudata.prise;
+              newRow["order_num"] = order.num;
+              newRow["order_ex"] = order.ex;
+              ordersDataTable.Rows.Add(newRow);
+
+              detailStrBuilder.Append(",");
+              detailStrBuilder.Append(menudata.name);
+              if (order.ex.Length > 0)
+              {
+                detailStrBuilder.Append("(");
+                detailStrBuilder.Append(order.ex);
+                detailStrBuilder.Append(")");
+              }
+              detailStrBuilder.Append("x");
+              detailStrBuilder.Append(order.num);
+            }
             if (detailStrBuilder.Length == 0)
             {
-              tarRow = detailDataTable.NewRow();
-              tarRow["name"] = data.name;
-              detailDataTable.Rows.Add(tarRow);
+              if ((m_defaultNameSet.Count == 0 || !m_defaultNameSet.Contains(data.name)))
+                detailDataTable.Rows.Remove(tarRow);
+              else
+                tarRow["detailStr"] = "";
+              continue;
             }
-            var menudata = m_menuData[order.id];
-            var newRow = ordersDataTable.NewRow();
-            newRow["customer"] = data.name;
-            newRow["order_id"] = order.id;
-            newRow["order_name"] = menudata.name;
-            newRow["order_prise"] = menudata.prise;
-            newRow["order_num"] = order.num;
-            newRow["order_ex"] = order.ex;
-            ordersDataTable.Rows.Add(newRow);
-
-            detailStrBuilder.Append(",");
-            detailStrBuilder.Append(menudata.name);
-            if(order.ex.Length > 0)
-            {
-              detailStrBuilder.Append("(");
-              detailStrBuilder.Append(order.ex);
-              detailStrBuilder.Append(")");
-            }
-            detailStrBuilder.Append("x");
-            detailStrBuilder.Append(order.num);
-          }
-
-          if(detailStrBuilder.Length > 0)
-          {
             tarRow["detailStr"] = detailStrBuilder.Remove(0, 1).ToString();
           }
         }
-        else
+        if (bChanged)
         {
-          DataRow[] childRows = tarRow.GetChildRows("customer_name");
-          foreach (var childRow in childRows)
+          totalDataTable.BeginLoadData();
+          totalDataTable.Rows.Clear();
+          var distinctRows = ordersDataTable.AsEnumerable().Distinct<DataRow>(m_defaultOrderCompare);
+          foreach (var row in distinctRows)
           {
-            ordersDataTable.Rows.Remove(childRow);
+            var newRow = totalDataTable.NewRow();
+            newRow["order_id"] = row["order_id"];
+            newRow["order_ex"] = row["order_ex"];
+            newRow["order_name"] = row["order_name"];
+            totalDataTable.Rows.Add(newRow);
           }
-          if (data.orders.Count <= 0)
-          {
-            if ((m_defaultNameSet.Count == 0 || !m_defaultNameSet.Contains(data.name)))
-              detailDataTable.Rows.Remove(tarRow);
-            else
-              tarRow["detailStr"] = "";
-            continue;
-          }
-          StringBuilder detailStrBuilder = new StringBuilder();
-          foreach (var order in data.orders)
-          {
-            if (order.id < 0 || order.id >= m_menuData.Count)
-              continue;
-            var menudata = m_menuData[order.id];
-            var newRow = ordersDataTable.NewRow();
-            newRow["customer"] = data.name;
-            newRow["order_id"] = order.id;
-            newRow["order_name"] = menudata.name;
-            newRow["order_prise"] = menudata.prise;
-            newRow["order_num"] = order.num;
-            newRow["order_ex"] = order.ex;
-            ordersDataTable.Rows.Add(newRow);
-
-            detailStrBuilder.Append(",");
-            detailStrBuilder.Append(menudata.name);
-            if (order.ex.Length > 0)
-            {
-              detailStrBuilder.Append("(");
-              detailStrBuilder.Append(order.ex);
-              detailStrBuilder.Append(")");
-            }
-            detailStrBuilder.Append("x");
-            detailStrBuilder.Append(order.num);
-          }
-          if(detailStrBuilder.Length == 0)
-          {
-            if ((m_defaultNameSet.Count == 0 || !m_defaultNameSet.Contains(data.name)))
-              detailDataTable.Rows.Remove(tarRow);
-            else
-              tarRow["detailStr"] = "";
-            continue;
-          }
-          tarRow["detailStr"] = detailStrBuilder.Remove(0, 1).ToString();
+          totalDataTable.EndLoadData();
+          detailDataTable.EndLoadData();
+          ordersDataTable.EndLoadData();
         }
       }
-      if(bChanged)
-      {
-        totalDataTable.BeginLoadData();
-        totalDataTable.Rows.Clear();
-        var distinctRows = ordersDataTable.AsEnumerable().Distinct<DataRow>(m_defaultOrderCompare);
-        foreach (var row in distinctRows)
-        {
-          var newRow = totalDataTable.NewRow();
-          newRow["order_id"] = row["order_id"];
-          newRow["order_ex"] = row["order_ex"];
-          newRow["order_name"] = row["order_name"];
-          totalDataTable.Rows.Add(newRow);
-        }
-        totalDataTable.EndLoadData();
-      }
-      detailDataTable.EndLoadData();
-      ordersDataTable.EndLoadData();
     }
-
   }
 }
