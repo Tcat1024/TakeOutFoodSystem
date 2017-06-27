@@ -18,13 +18,15 @@ namespace TakeOutSystem
     public float prise;
     public bool has_ex;
     public string img_path;
-    public MenuData(int _id, string _name, float _prise, bool _has_ex, string _img_path)
+    public float box_prise;
+    public MenuData(int _id, string _name, float _prise, bool _has_ex, string _img_path, float _box_prise)
     {
       id = _id;
       name = _name;
       prise = _prise;
       has_ex = _has_ex;
       img_path = _img_path;
+      box_prise = _box_prise;
     }
   }
   public class DataManager
@@ -214,7 +216,7 @@ namespace TakeOutSystem
       m_dicMenuPrises.Clear();
     }
 
-    public void AddNewMenuData(string name, float prise, bool has_ex, string img_path)
+    public void AddNewMenuData(string name, float prise, bool has_ex, string img_path, float box_prise)
     {
       List<float> prises;
       if (m_dicMenuPrises.TryGetValue(name, out prises))
@@ -228,7 +230,7 @@ namespace TakeOutSystem
       }
       else
         m_dicMenuPrises[name] = new List<float>() { prise };
-      m_menuData.Add(new MenuData(m_menuData.Count, name, prise, has_ex, img_path));
+      m_menuData.Add(new MenuData(m_menuData.Count, name, prise, has_ex, img_path, box_prise));
     }
 
     public string AnalyseOrderDataAsyn(string serilizedStr)

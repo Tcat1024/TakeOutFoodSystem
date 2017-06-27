@@ -14,6 +14,7 @@ namespace TakeOutSystem
   {
     public string name;
     public float prise;
+    public float boxprise;
     public bool has_ex;
     public string img_path;
 
@@ -98,7 +99,7 @@ namespace TakeOutSystem
       var shopNameMatch = Regex.Match(webStr, "<section class=\"basicinfo\">[\\s,\\S]*?<div class=\"one-line\">\\s*?<h2>(\\S+?)</h2>");
       shopName = null != shopNameMatch ? shopNameMatch.Groups[1].Value : "未知商贩";
 
-      var orderMatches = Regex.Matches(webStr, "<li class=\"list-item\" data=\"[\\S,\\s]+?</li>");
+      var orderMatches = Regex.Matches(webStr, "<li class=\"list-item\" data=\"[\\S,\\s]+?\\$[\\S,\\s]+?\\$[\\S,\\s]+?\\$(\\d+?)\\$(\\d+?(\\.\\d+?|\\d*?))\\$[\\S,\\s]+?</li>");
       List<WebSiteAnalyseResult> result = new List<WebSiteAnalyseResult>(orderMatches.Count);
       foreach (Match match in orderMatches)
       {
@@ -134,6 +135,10 @@ namespace TakeOutSystem
         if (null == priseMath || !priseMath.Success)
           continue;
         tarResult.prise = float.Parse(priseMath.Groups[1].Value);
+
+        var boxpriseScaleMatch = float.Parse(match.Groups[1].Value);
+        var boxpriseMatch = float.Parse(match.Groups[2].Value);
+        tarResult.boxprise = boxpriseMatch * boxpriseScaleMatch;
 
         var nameMatch = Regex.Match(match.Value, "<div class=\"info fl\">\\s*?<h3\\s*data-title=\"([\\S,\\s]+?)\" data-content=\"([\\S,\\s]+?)\"");
         if (null == nameMatch || !nameMatch.Success)

@@ -70,8 +70,7 @@
       this.StatusStripLabel = new System.Windows.Forms.ToolStripLabel();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       this.BottomStrip = new System.Windows.Forms.ToolStrip();
-      this.BoxPriceTex = new System.Windows.Forms.TextBox();
-      this.label4 = new System.Windows.Forms.Label();
+      this.calcBoxPriseChb = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.DetailGrid)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.OrderGrid)).BeginInit();
       this.OpenGroup.SuspendLayout();
@@ -519,22 +518,18 @@
       this.BottomStrip.TabIndex = 24;
       this.BottomStrip.Text = "BottomStrip";
       // 
-      // BoxPriceTex
+      // calcBoxPriseChb
       // 
-      this.BoxPriceTex.Location = new System.Drawing.Point(605, 12);
-      this.BoxPriceTex.Name = "BoxPriceTex";
-      this.BoxPriceTex.Size = new System.Drawing.Size(49, 21);
-      this.BoxPriceTex.TabIndex = 7;
-      // 
-      // label4
-      // 
-      this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.label4.AutoSize = true;
-      this.label4.Location = new System.Drawing.Point(552, 15);
-      this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(47, 12);
-      this.label4.TabIndex = 25;
-      this.label4.Text = "餐盒费:";
+      this.calcBoxPriseChb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.calcBoxPriseChb.AutoSize = true;
+      this.calcBoxPriseChb.Checked = true;
+      this.calcBoxPriseChb.CheckState = System.Windows.Forms.CheckState.Checked;
+      this.calcBoxPriseChb.Location = new System.Drawing.Point(569, 15);
+      this.calcBoxPriseChb.Name = "calcBoxPriseChb";
+      this.calcBoxPriseChb.Size = new System.Drawing.Size(84, 16);
+      this.calcBoxPriseChb.TabIndex = 26;
+      this.calcBoxPriseChb.Text = "计算餐盒费";
+      this.calcBoxPriseChb.UseVisualStyleBackColor = true;
       // 
       // Form1
       // 
@@ -542,8 +537,7 @@
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.ClientSize = new System.Drawing.Size(970, 663);
-      this.Controls.Add(this.label4);
-      this.Controls.Add(this.BoxPriceTex);
+      this.Controls.Add(this.calcBoxPriseChb);
       this.Controls.Add(this.BottomStrip);
       this.Controls.Add(this.StartBtn);
       this.Controls.Add(this.StopBtn);
@@ -625,8 +619,7 @@
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     private System.Windows.Forms.ToolStrip BottomStrip;
     private System.Windows.Forms.CheckBox allowOrderChb;
-    private System.Windows.Forms.TextBox BoxPriceTex;
-    private System.Windows.Forms.Label label4;
+    private System.Windows.Forms.CheckBox calcBoxPriseChb;
   }
 }
 

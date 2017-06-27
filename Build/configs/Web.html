@@ -181,7 +181,6 @@ body
 	var targetcash = parseFloat(document.getElementById("targetcash").innerHTML);
 	var input = document.getElementById("nameinput");
 	var submitbtn = document.getElementById("submitbtn");
-	var boxPrize = {5};
 	function OnAddClick(paramater)
 	{{
 		Add(paramater.parentNode.parentNode);
@@ -196,6 +195,7 @@ body
 		var children = node.children || node.childNodes;
 		var ex = "";
 		var allow_ex = false;
+		var boxprice = node.getAttribute("data-boxprice");
 		for(var i = 0; i < children.length; ++i)
 		{{
 			switch(children[i].id)
@@ -245,7 +245,7 @@ body
 		{{
 			alert("您选择了一项多规格商品，请在“规格”输入框中填入规格描述");
 		}}
-		OnDishNumChange(node, name, num, prise, hashid, ex);
+		OnDishNumChange(node, name, num, prise, hashid, ex, boxprice);
 	}}
 	function OnDeleteClick(paramater)
 	{{
@@ -260,6 +260,7 @@ body
 		var hashid = node.getAttribute("data-hashid");
 		var children = node.children || node.childNodes;
 		var ex = "";
+		var boxprice = node.getAttribute("data-boxprice");
 		for(var i = 0; i < children.length; ++i)
 		{{
 			switch(children[i].id)
@@ -304,7 +305,7 @@ body
 					break;
 			}}
 		}}
-		OnDishNumChange(node, name, num, prise, hashid, ex);
+		OnDishNumChange(node, name, num, prise, hashid, ex, boxprice);
 	}}
 	function AddFromCart(paramater)
 	{{
@@ -316,7 +317,7 @@ body
 		var idx = paramater.parentNode.getAttribute("data-idx");
 		Delete(orderArray[idx].node);
 	}}
-	function OnDishNumChange(paramater, name, num, prise, hashid, ex)
+	function OnDishNumChange(paramater, name, num, prise, hashid, ex, boxprice)
 	{{
 		var target = orderTable[hashid];
 		totalnum = 0
@@ -345,7 +346,8 @@ body
 					num:num,
 					prise:prise,
 					hashid:hashid,
-					ex:ex
+					ex:ex,
+					boxprice:boxprice,
 				}}
 				orderArray[orderArray.length] = target
 				orderTable[hashid] = target
@@ -357,11 +359,12 @@ body
 				target["num"] = num;
 				target["prise"] = prise;
 				target["ex"] = ex;
+				target["boxprice"] = boxprice;
 			}}
 			
 		}}
 		var children = cartList.children || cartList.childNodes;
-		var totalcount = 0;
+		var boxPriceTotal = 0;
 		for(var i = 0; i < orderArray.length; ++i)
 		{{
 			var target = children[i];
@@ -394,12 +397,11 @@ body
 				}}
 			}}
 			totalnum += orderArray[i].prise * orderArray[i].num;
-			totalcount += orderArray[i].num;
+			boxPriceTotal += orderArray[i].boxprice * orderArray[i].num;
 		}}
 		var orderLength = orderArray.length;
-		if(boxPrize > 0 && totalcount > 0)
+		if(boxPriceTotal > 0)
 		{{
-			var boxPrizeTotal = boxPrize * totalcount;
 			var target = children[orderLength];
 			if(target == null)
 			{{
@@ -418,7 +420,7 @@ body
 						nodes[j].innerHTML = "餐盒费";
 						break;
 					case "prise":
-						nodes[j].innerHTML = boxPrizeTotal;
+						nodes[j].innerHTML = boxPriceTotal;
 						break;
 					case "add":
 					case "num":
@@ -427,7 +429,7 @@ body
 						break;
 				}}
 			}}
-			totalnum += boxPrizeTotal;
+			totalnum += boxPriceTotal;
 			orderLength += 1;
 		}}
 		

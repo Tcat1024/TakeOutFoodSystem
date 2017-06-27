@@ -84,16 +84,11 @@ namespace TakeOutSystem
         DataManager.instance.ClearMenuData();
         foreach (var ret in result)
         {
-          DataManager.instance.AddNewMenuData(ret.name, ret.prise, ret.has_ex, ret.img_path);
+          DataManager.instance.AddNewMenuData(ret.name, ret.prise, ret.has_ex, ret.img_path, ret.boxprise);
         }
         m_lastWebSite = TargetUrlTex.Text;
-
-        float boxPrice;
-        if(!float.TryParse(BoxPriceTex.Text, out boxPrice) || boxPrice < 0)
-        {
-          boxPrice = 0;
-        }
-        string webSiteStr = WebSiteGenerator.GetWebSiteStr("订餐吧", shopName, TargetUrlTex.Text, m_maxPrice, boxPrice, DataManager.instance.menuData);
+        
+        string webSiteStr = WebSiteGenerator.GetWebSiteStr("订餐吧", shopName, TargetUrlTex.Text, m_maxPrice, calcBoxPriseChb.Checked, DataManager.instance.menuData);
         if (webSiteStr == "")
         {
           MessageBox.Show("网页生成失败");
@@ -117,9 +112,9 @@ namespace TakeOutSystem
         StopBtn.Visible = true;
         SetStatusMsg("服务已开启");
       }
-      catch
+      catch(Exception ex)
       {
-
+        MessageBox.Show("error:" + ex.Message);
       }
       finally
       {
