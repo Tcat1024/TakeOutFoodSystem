@@ -36,7 +36,7 @@ namespace TakeOutSystem
 
       WebClient MyWebClient = new WebClient();
       
-      MyWebClient.Credentials = CredentialCache.DefaultCredentials;//获取或设置用于向Internet资源的请求进行身份验证的网络凭据
+      //MyWebClient.Credentials = CredentialCache.DefaultCredentials;//获取或设置用于向Internet资源的请求进行身份验证的网络凭据
 
       Byte[] pageData;
       try
@@ -47,9 +47,9 @@ namespace TakeOutSystem
           return "网址错误";
         }
       }
-      catch
+      catch(Exception e)
       {
-        return "网址无法访问";
+        return "网址无法访问：" + e.Message;
       }
 
       //string pageHtml = Encoding.Default.GetString(pageData);  //如果获取网站页面采用的是GB2312，则使用这句            
