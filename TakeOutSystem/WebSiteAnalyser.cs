@@ -29,7 +29,7 @@ namespace TakeOutSystem
     {
       results = null;
       shopName = "";
-      if (weburl.Length <= 8 || weburl.Substring(0, 8) != "https://")
+      if (weburl.Length <= 8 || (weburl.Substring(0, 8) != "https://" && weburl.Substring(0, 7) != "http://"))
       {
         weburl = "https://" + weburl;
       }
