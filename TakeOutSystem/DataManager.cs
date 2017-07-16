@@ -265,12 +265,12 @@ namespace TakeOutSystem
         {
           return "Error：未录入菜单，请联系服务器";
         }
-        Match nameMatch = Regex.Match(serilizedStr, @"\[name:(\S+?)\]");
+        Match nameMatch = Regex.Match(serilizedStr, @"\[name:([\S,\s]+?)\]");
         if (!nameMatch.Success || nameMatch.Groups.Count <= 0)
           return "Error：姓名不正确";
 
         string name = nameMatch.Groups[1].Value;
-        var anaResult = Regex.Matches(serilizedStr, @"\[id\S+?:(\d+?)\],\[num\S+?:(\d+?)\],\[ex\S+?:(\S*?)\]");
+        var anaResult = Regex.Matches(serilizedStr, @"\[id\S+?:(\d+?)\],\[num\S+?:(\d+?)\],\[ex\S+?:([\S,\s]*?)\]");
         List<OrderDetail> orderList = new List<OrderDetail>();
         foreach (Match match in anaResult)
         {
