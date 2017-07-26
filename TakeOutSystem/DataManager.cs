@@ -237,11 +237,13 @@ namespace TakeOutSystem
     {
       if(serilizedStr.Substring(0, 5).ToLower() == "query") // 查询指令
       {
-        Match nameMatch = Regex.Match(serilizedStr, @"\[name:(\S+?)\]");
+        Match nameMatch = Regex.Match(serilizedStr, @"\[name:([\s,\S]+?)\]");
         if (!nameMatch.Success || nameMatch.Groups.Count <= 0)
           return "Error：姓名不正确";
-        string name = nameMatch.Groups[1].Value;
-        lock(m_tableLock)
+        string name = nameMatch.Groups[1].Value.Trim().Replace(" ","");
+        if (name.Length == 0)
+          return "Error：姓名不正确";
+        lock (m_tableLock)
         {
           if(detailDataTable == null)
           {
@@ -269,7 +271,9 @@ namespace TakeOutSystem
         if (!nameMatch.Success || nameMatch.Groups.Count <= 0)
           return "Error：姓名不正确";
 
-        string name = nameMatch.Groups[1].Value;
+        string name = nameMatch.Groups[1].Value.Trim().Replace(" ", "");
+        if (name.Length == 0)
+          return "Error：姓名不正确";
         var anaResult = Regex.Matches(serilizedStr, @"\[id\S+?:(\d+?)\],\[num\S+?:(\d+?)\],\[ex\S+?:([\S,\s]*?)\]");
         List<OrderDetail> orderList = new List<OrderDetail>();
         foreach (Match match in anaResult)
