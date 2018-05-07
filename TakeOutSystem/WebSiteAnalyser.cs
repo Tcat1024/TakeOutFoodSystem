@@ -145,7 +145,7 @@ namespace TakeOutSystem
           continue;
         tarResult.name = nameMatch.Groups[1].Value;
 
-        var imgMatch = Regex.Match(match.Value, "<div class=\"bg-img\" style=\"background: url\\(([\\S,\\s]+?)@");
+        var imgMatch = Regex.Match(match.Value, "<div class=\"bg-img\" style=\"background: url\\(([\\S,\\s]+?)\\)");
         if (null != imgMatch && imgMatch.Success)
         {
           tarResult.img_path = imgMatch.Groups[1].Value;
