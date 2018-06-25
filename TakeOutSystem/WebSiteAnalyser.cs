@@ -140,7 +140,7 @@ namespace TakeOutSystem
         var boxpriseMatch = float.Parse(match.Groups[2].Value);
         tarResult.boxprise = boxpriseMatch * boxpriseScaleMatch;
 
-        var nameMatch = Regex.Match(match.Value, "<div class=\"info fl\">\\s*?<h3\\s*data-title=\"([\\S,\\s]+?)\" data-content=\"([\\S,\\s]+?)\"");
+        var nameMatch = Regex.Match(match.Value, "<div class=\"info fl\">\\s*?<h3[\\S,\\s]*?data-title=\"([\\S,\\s]+?)\" data-content=\"([\\S,\\s]+?)\"");
         if (null == nameMatch || !nameMatch.Success)
           continue;
         tarResult.name = nameMatch.Groups[1].Value;
