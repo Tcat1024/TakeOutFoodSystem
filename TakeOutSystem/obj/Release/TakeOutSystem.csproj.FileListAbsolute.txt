@@ -18,6 +18,6 @@ E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.Properties.Res
 E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.csproj.GenerateResource.Cache
 E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.exe
 E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.pdb
-E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.csprojResolveAssemblyReference.cache
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Release\TakeOutSystem.csprojResolveAssemblyReference.cache
 E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.csproj.CoreCompileInputs.cache
+E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.csprojAssemblyReference.cache

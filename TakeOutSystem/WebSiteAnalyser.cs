@@ -64,7 +64,7 @@ namespace TakeOutSystem
       {
         startIdx = startMatch.Index + 2;
       }
-      if (weburl.Substring(startIdx, 16) == "waimai.baidu.com")
+      if (weburl.Substring(startIdx, 11) == "star.ele.me")
       {
         unproResult = BaiDuWaiMaiAnalyser.Analyse(pageHtml, out shopName);
       }
