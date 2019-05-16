@@ -21,3 +21,5 @@ E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.pdb
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Release\TakeOutSystem.csprojResolveAssemblyReference.cache
 E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.csproj.CoreCompileInputs.cache
 E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.csprojAssemblyReference.cache
+E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.ElemeLogin.resources
+E:\Programs\TakeOutSystem\TakeOutSystem\obj\Release\TakeOutSystem.Form2.resources
