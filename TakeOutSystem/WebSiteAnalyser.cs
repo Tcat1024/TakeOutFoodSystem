@@ -79,9 +79,9 @@ namespace TakeOutSystem
         return "不支持的网站";
       }
       
-      var waitForm = new Form2();
-      waitForm.url = weburl;
-      waitForm.cookies = s_CurCookies;
+      var waitForm = new WebLogin(weburl);
+      waitForm.Url = weburl;
+      //waitForm.cookies = s_CurCookies;
       if (waitForm.ShowDialog() != DialogResult.OK)
       {
         return "网站链接失败";
@@ -121,7 +121,7 @@ namespace TakeOutSystem
 
       //string pageHtml = Encoding.UTF8.GetString(pageData); //如果获取网站页面采用的是UTF-8，则使用这句
 
-      List<WebSiteAnalyseResult> unproResult = func(waitForm.content, out shopName);
+      List<WebSiteAnalyseResult> unproResult = func(waitForm.Content, out shopName);
 
       if (null == unproResult || unproResult.Count <= 0)
       {
@@ -146,15 +146,15 @@ namespace TakeOutSystem
     static public List<WebSiteAnalyseResult> Analyse(string webStr, out string shopName)
     {
 
-      var shopNameMatch = Regex.Match(webStr, "<section class=\"basicinfo\">[\\s,\\S]*?<div class=\"one-line\">\\s*?<h2>(\\S+?)</h2>");
+      var shopNameMatch = Regex.Match(webStr, "<section class=\"basicinfo\">[\\s,\\S]*?<div class=\"one-line\">\\s*?<h2>(\\S+?)</h2>", RegexOptions.IgnoreCase);
       shopName = null != shopNameMatch ? shopNameMatch.Groups[1].Value : "未知商贩";
 
-      var orderMatches = Regex.Matches(webStr, "<li class=\"list-item\" data=\"[\\S,\\s]+?\\$[\\S,\\s]+?\\$[\\S,\\s]+?\\$(\\d+?)\\$(\\d+?(\\.\\d+?|\\d*?))\\$[\\S,\\s]+?</li>");
+      var orderMatches = Regex.Matches(webStr, "<li class=\"list-item\" data=\"[\\S,\\s]+?\\$[\\S,\\s]+?\\$[\\S,\\s]+?\\$(\\d+?)\\$(\\d+?(\\.\\d+?|\\d*?))\\$[\\S,\\s]+?</li>", RegexOptions.IgnoreCase);
       List<WebSiteAnalyseResult> result = new List<WebSiteAnalyseResult>(orderMatches.Count);
       foreach (Match match in orderMatches)
       {
         WebSiteAnalyseResult tarResult = new WebSiteAnalyseResult();
-        if (Regex.IsMatch(match.Value, "<div class=\"m-sel-icon\" unselectable=\"on\">"))
+        if (Regex.IsMatch(match.Value, "<div class=\"m-sel-icon\" unselectable=\"on\">", RegexOptions.IgnoreCase))
         {
           tarResult.has_ex = false;
         }
@@ -169,11 +169,11 @@ namespace TakeOutSystem
 
 
         bool useOriginPrise = false;
-        var activity = Regex.Match(match.Value, "dishActivityId=\"\\d+?\"");
+        var activity = Regex.Match(match.Value, "dishActivityId=\"\\d+?\"", RegexOptions.IgnoreCase);
         // 有活动
         if (null != activity && activity.Success)
         {
-          var orderLimite = Regex.Match(match.Value, "orderlimit=\"(\\d+?)\"");
+          var orderLimite = Regex.Match(match.Value, "orderlimit=\"(\\d+?)\"", RegexOptions.IgnoreCase);
           int limiteNum;
           if (null != orderLimite && orderLimite.Success && int.TryParse(orderLimite.Groups[1].Value, out limiteNum) && limiteNum < 10)
           {
@@ -181,7 +181,7 @@ namespace TakeOutSystem
           }
         }
 
-        var priseMath = useOriginPrise ? Regex.Match(match.Value, "<div class=\"m-price\">[\\s,\\S]*?<del>\\s*?<strong>&#165;(\\d+?(\\.\\d+?|\\d*?))起?</strong>\\s*?</del>") : Regex.Match(match.Value, "<div class=\"m-price\">[\\s,\\S]*?<strong>&#165;(\\d+?(\\.\\d+?|\\d*?))起?</strong>");
+        var priseMath = useOriginPrise ? Regex.Match(match.Value, "<div class=\"m-price\">[\\s,\\S]*?<del>\\s*?<strong>¥(\\d+?(\\.\\d+?|\\d*?))起?</strong>\\s*?</del>", RegexOptions.IgnoreCase) : Regex.Match(match.Value, "<div class=\"m-price\">[\\s,\\S]*?<strong>¥(\\d+?(\\.\\d+?|\\d*?))起?</strong>", RegexOptions.IgnoreCase);
         if (null == priseMath || !priseMath.Success)
           continue;
         tarResult.prise = float.Parse(priseMath.Groups[1].Value);
@@ -190,12 +190,12 @@ namespace TakeOutSystem
         var boxpriseMatch = float.Parse(match.Groups[2].Value);
         tarResult.boxprise = boxpriseMatch * boxpriseScaleMatch;
 
-        var nameMatch = Regex.Match(match.Value, "<div class=\"info fl\">\\s*?<h3[\\S,\\s]*?data-title=\"([\\S,\\s]+?)\" data-content=\"([\\S,\\s]+?)\"");
+        var nameMatch = Regex.Match(match.Value, "<div class=\"info fl\">\\s*?<h3[\\S,\\s]*?data-title=\"([\\S,\\s]+?)\" data-content=\"([\\S,\\s]+?)\"", RegexOptions.IgnoreCase);
         if (null == nameMatch || !nameMatch.Success)
           continue;
         tarResult.name = nameMatch.Groups[1].Value;
 
-        var imgMatch = Regex.Match(match.Value, "<div class=\"bg-img\" style=\"background: url\\(([\\S,\\s]+?)\\)");
+        var imgMatch = Regex.Match(match.Value, "<div class=\"bg-img\" style=\"background: url\\(([\\S,\\s]+?)\\)", RegexOptions.IgnoreCase);
         if (null != imgMatch && imgMatch.Success)
         {
           tarResult.img_path = imgMatch.Groups[1].Value;
