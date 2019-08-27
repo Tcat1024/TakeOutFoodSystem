@@ -38,10 +38,11 @@ namespace TakeOutSystem
     private static CookieCollection s_CurCookies;
 
     private delegate List<WebSiteAnalyseResult> AnalyseFunc(string html, out string name);
-    static public string Analyser(string weburl, out List<WebSiteAnalyseResult> results, out string shopName)
+    static public string Analyser(string weburl, out List<WebSiteAnalyseResult> results, out string shopName, out string realUrl)
     {
       results = null;
       shopName = "";
+      realUrl = weburl;
       if (weburl.Length <= 8 || (weburl.Substring(0, 8) != "https://" && weburl.Substring(0, 7) != "http://"))
       {
         weburl = "https://" + weburl;
@@ -80,13 +81,12 @@ namespace TakeOutSystem
       }
       
       var waitForm = new WebLogin(weburl);
-      waitForm.Url = weburl;
       //waitForm.cookies = s_CurCookies;
       if (waitForm.ShowDialog() != DialogResult.OK)
       {
         return "网站链接失败";
       }
-
+      realUrl = waitForm.Url;
       //WebClient MyWebClient = new WebClient();
       //if (null != s_CurCookies)
       //{

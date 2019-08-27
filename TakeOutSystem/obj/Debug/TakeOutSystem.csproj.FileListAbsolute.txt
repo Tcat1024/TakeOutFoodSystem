@@ -19,3 +19,5 @@ E:\Workspace\TakeOutFoodSystem\Build\TakeOutSystem.exe
 E:\Workspace\TakeOutFoodSystem\Build\TakeOutSystem.pdb
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Debug\TakeOutSystem.exe
 E:\Workspace\TakeOutFoodSystem\TakeOutSystem\obj\Debug\TakeOutSystem.pdb
+E:\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.exe
+E:\TakeOutSystem\TakeOutSystem\obj\Debug\TakeOutSystem.pdb

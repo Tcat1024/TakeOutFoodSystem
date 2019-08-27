@@ -72,8 +72,8 @@ namespace TakeOutSystem
         }
 
         List<WebSiteAnalyseResult> result;
-        string shopName;
-        var errorMsg = WebSiteAnalyser.Analyser(TargetUrlTex.Text, out result, out shopName);
+        string shopName, realUrl;
+        var errorMsg = WebSiteAnalyser.Analyser(TargetUrlTex.Text, out result, out shopName, out realUrl);
 
         if (errorMsg != "")
         {
@@ -88,7 +88,7 @@ namespace TakeOutSystem
         }
         m_lastWebSite = TargetUrlTex.Text;
         
-        string webSiteStr = WebSiteGenerator.GetWebSiteStr("订餐吧", shopName, TargetUrlTex.Text, m_maxPrice, calcBoxPriseChb.Checked, DataManager.instance.menuData);
+        string webSiteStr = WebSiteGenerator.GetWebSiteStr("订餐吧", shopName, realUrl, m_maxPrice, calcBoxPriseChb.Checked, DataManager.instance.menuData);
         if (webSiteStr == "")
         {
           MessageBox.Show("网页生成失败");
@@ -147,6 +147,7 @@ namespace TakeOutSystem
         }
 
         m_curServer.isActive = false;
+        m_httpThread.Abort();
         while (m_httpThread.IsAlive)
         {
           Thread.Sleep(500);

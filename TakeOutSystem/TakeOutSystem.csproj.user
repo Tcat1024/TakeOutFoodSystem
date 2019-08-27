@@ -18,6 +18,6 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <StartWorkingDirectory>E:\Programs\TakeOutSystem\Build\</StartWorkingDirectory>
+    <StartWorkingDirectory>E:\TakeOutSystem\Build\</StartWorkingDirectory>
   </PropertyGroup>
 </Project>
